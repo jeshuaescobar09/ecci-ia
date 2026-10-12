@@ -435,7 +435,10 @@ def admin_eliminar(tipo, item_id):
 
 
 
-ARCHIVOS_PUBLICOS = {"index.html", "admin.html", "styles.css", "extra.css", "app.js"}
+ARCHIVOS_PUBLICOS = {
+    "index.html", "admin.html", "styles.css", "extra.css", "app.js",
+    "tema-diario.css", "animaciones.css", "animaciones.js",
+}
 
 
 @app.get("/")
