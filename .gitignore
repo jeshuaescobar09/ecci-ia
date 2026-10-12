@@ -1,0 +1,12 @@
+# Secretos: NUNCA subir a GitHub
+.env
+backend/.env
+
+# Entorno virtual y archivos temporales de Python
+.venv/
+__pycache__/
+*.pyc
+
+# Imágenes que suben los usuarios (se guardan en el servidor, no en GitHub)
+backend/uploads/*
+!backend/uploads/.gitkeep

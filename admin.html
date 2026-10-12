@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel de moderación | ECCI.IA</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="extra.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="contenedor header-fila">
+      <a class="marca" href="index.html" aria-label="Volver al portal ECCI.IA">
+        <span class="marca-texto">
+          <strong>ECCI<span>.IA</span></strong>
+          <small>Panel de moderación</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Navegación">
+        <a href="index.html" id="ir-portal">Ver portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor admin-main">
+    <!-- Acceso -->
+    <section class="admin-login" id="acceso">
+      <h1>Moderación</h1>
+      <p>Solo para el equipo de la ECCI. Escribe la clave de administración (la que está en tu archivo <code>.env</code>).</p>
+      <form id="form-acceso" autocomplete="off">
+        <label for="clave">Clave de administración</label>
+        <input type="password" id="clave" required minlength="1" autocomplete="off">
+        <button class="btn btn-primario" type="submit">Entrar</button>
+        <p class="mensaje" id="msg-acceso" role="alert"></p>
+      </form>
+    </section>
+
+    <!-- Panel -->
+    <section id="panel" hidden>
+      <div class="admin-cabecera">
+        <h1>Panel de moderación</h1>
+        <button class="btn btn-fantasma" id="salir" type="button">Cerrar sesión</button>
+      </div>
+
+      <div class="admin-resumen" id="resumen"></div>
+
+      <div class="admin-tabs" role="tablist">
+        <button type="button" id="tab-noticias" class="activa" role="tab">Noticias</button>
+        <button type="button" id="tab-opiniones" role="tab">Opiniones</button>
+        <button type="button" id="tab-videos" role="tab">Videos</button>
+      </div>
+
+      <div class="admin-filtros">
+        <label for="filtro">Mostrar</label>
+        <select id="filtro">
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobada">Aprobadas</option>
+          <option value="rechazada">Rechazadas</option>
+          <option value="todas">Todas</option>
+        </select>
+        <button class="btn btn-fantasma" id="recargar" type="button">Actualizar</button>
+      </div>
+
+      <p class="mensaje" id="msg-panel" role="alert"></p>
+      <div class="admin-lista" id="lista"></div>
+    </section>
+  </main>
+
+  <script>
+  (function () {
+    "use strict";
+
+    function direccionApi() {
+      if (typeof window.ECCI_API_BASE === "string") { return window.ECCI_API_BASE; }
+      var local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+      if (location.protocol === "file:" || (local && location.port !== "8000")) { return "http://localhost:8000"; }
+      return "";
+    }
+    var API = direccionApi();
+    var $ = function (id) { return document.getElementById(id); };
+
+    var clave = "";
+    try { clave = sessionStorage.getItem("ecci_admin") || ""; } catch (e) { clave = ""; }
+    var tipo = "noticias";
+
+    function guardarClave(v) {
+      clave = v;
+      try { if (v) { sessionStorage.setItem("ecci_admin", v); } else { sessionStorage.removeItem("ecci_admin"); } } catch (e) {}
+    }
+
+    function crear(tag, clase, texto) {
+      var n = document.createElement(tag);
+      if (clase) { n.className = clase; }
+      if (texto !== undefined && texto !== null) { n.textContent = texto; }
+      return n;
+    }
+
+    function mensaje(nodo, texto, clase) {
+      nodo.textContent = texto || "";
+      nodo.className = "mensaje" + (clase ? " " + clase : "");
+    }
+
+    function fecha(iso) {
+      if (!iso) { return ""; }
+      var d = new Date(iso);
+      return isNaN(d) ? "" : d.toLocaleString("es-CR", { dateStyle: "medium", timeStyle: "short" });
+    }
+
+    function urlImagen(u) {
+      if (typeof u !== "string") { return ""; }
+      if (u.indexOf("/uploads/") === 0) { return API + u; }
+      if (/^imagenes\/[\w.\-\/]+$/.test(u) && u.indexOf("..") === -1) { return u; }
+      return "";
+    }
+
+    function pedir(metodo, ruta, cuerpo) {
+      var ctl = new AbortController();
+      var t = setTimeout(function () { ctl.abort(); }, 12000);
+      var op = { method: metodo, headers: { "X-Admin-Key": clave }, signal: ctl.signal };
+      if (cuerpo !== undefined) {
+        op.headers["Content-Type"] = "application/json";
+        op.body = JSON.stringify(cuerpo);
+      }
+      return fetch(API + ruta, op).then(function (r) {
+        clearTimeout(t);
+        return r.json().catch(function () { return {}; }).then(function (datos) {
+          if (!r.ok) {
+            var e = new Error(datos.detail || "Error " + r.status);
+            e.estado = r.status;
+            throw e;
+          }
+          return datos;
+        });
+      }, function () {
+        clearTimeout(t);
+        var e = new Error("No se pudo conectar con el servidor. ¿Está encendido (python main.py)?");
+        e.estado = 0;
+        throw e;
+      });
+    }
+
+    function errorPanel(e) {
+      if (e.estado === 401) {
+        guardarClave("");
+        mostrarAcceso();
+        mensaje($("msg-acceso"), "Clave incorrecta o sesión vencida.", "error");
+        return;
+      }
+      if (e.estado === 429) { mensaje($("msg-panel"), "Demasiados intentos. Espera unos minutos.", "error"); return; }
+      if (e.estado === 503) { mensaje($("msg-panel"), "El servidor no está configurado o no llega a la base de datos: " + e.message, "error"); return; }
+      mensaje($("msg-panel"), e.message, "error");
+    }
+
+    function mostrarAcceso() { $("panel").hidden = true; $("acceso").hidden = false; }
+    function mostrarPanel() { $("acceso").hidden = true; $("panel").hidden = false; }
+
+    /* ---------- Resumen ---------- */
+    function pintarResumen(r) {
+      var cont = $("resumen");
+      cont.textContent = "";
+      var partes = [
+        ["Noticias pendientes", (r.noticias || {}).pendiente, true],
+        ["Noticias aprobadas", (r.noticias || {}).aprobada, false],
+        ["Opiniones pendientes", (r.opiniones || {}).pendiente, true],
+        ["Opiniones aprobadas", (r.opiniones || {}).aprobada, false],
+        ["Videos pendientes", (r.videos || {}).pendiente, true],
+        ["Videos aprobados", (r.videos || {}).aprobada, false]
+      ];
+      partes.forEach(function (p) {
+        var n = p[1] || 0;
+        var c = crear("div", "contador" + (p[2] && n > 0 ? " alerta" : ""));
+        c.appendChild(crear("strong", "", String(n)));
+        c.appendChild(crear("span", "", p[0]));
+        cont.appendChild(c);
+      });
+    }
+
+    /* ---------- Lista ---------- */
+    function accion(texto, clase, fn) {
+      var b = crear("button", "btn " + clase, texto);
+      b.type = "button";
+      b.addEventListener("click", function () { b.disabled = true; fn().then(null, function () {}).then(function () { b.disabled = false; }); });
+      return b;
+    }
+
+    function ejecutar(metodo, ruta, cuerpo) {
+      mensaje($("msg-panel"), "");
+      return pedir(metodo, ruta, cuerpo).then(cargar, errorPanel);
+    }
+
+    function tarjeta(d) {
+      var it = crear("article", "admin-item");
+      var et = crear("div", "admin-etiquetas");
+      et.appendChild(crear("span", "estado " + d.estado, d.estado));
+      if (tipo !== "opiniones" && d.categoria) { et.appendChild(crear("span", "meta", d.categoria)); }
+      if (tipo === "opiniones" && d.tema) { et.appendChild(crear("span", "meta", d.tema)); }
+      it.appendChild(et);
+
+      if (tipo === "noticias") {
+        it.appendChild(crear("h3", "", d.titulo));
+        var meta = "Por " + d.autor + (d.correo ? " · " + d.correo : "") + " · " + fecha(d.fecha_creacion);
+        it.appendChild(crear("p", "meta", meta));
+        it.appendChild(crear("p", "", d.resumen));
+        var img = urlImagen(d.imagen_url);
+        if (img) { var i = crear("img"); i.src = img; i.alt = "Imagen enviada con la noticia"; i.loading = "lazy"; it.appendChild(i); }
+        var det = crear("details");
+        det.appendChild(crear("summary", "", "Leer contenido completo"));
+        var div = crear("div");
+        div.appendChild(crear("p", "", d.contenido));
+        det.appendChild(div);
+        it.appendChild(det);
+      } else if (tipo === "videos") {
+        it.appendChild(crear("h3", "", d.titulo));
+        it.appendChild(crear("p", "meta", "Por " + d.autor + (d.correo ? " · " + d.correo : "") + " · " + fecha(d.fecha_creacion)));
+        if (d.descripcion) { it.appendChild(crear("p", "", d.descripcion)); }
+        if (/^[A-Za-z0-9_-]{11}$/.test(d.youtube_id || "")) {
+          var mini = crear("img");
+          mini.src = "https://i.ytimg.com/vi/" + d.youtube_id + "/hqdefault.jpg";
+          mini.alt = "Miniatura del video";
+          mini.loading = "lazy";
+          it.appendChild(mini);
+          var ver = crear("a", "enlace-video", "Ver el video en YouTube ↗");
+          ver.href = "https://www.youtube.com/watch?v=" + d.youtube_id;
+          ver.target = "_blank";
+          ver.rel = "noopener noreferrer";
+          it.appendChild(ver);
+        }
+      } else {
+        it.appendChild(crear("p", "meta", d.nombre + " · " + fecha(d.fecha_creacion)));
+        it.appendChild(crear("p", "", d.texto));
+      }
+
+      if (d.estado === "rechazada" && d.motivo_rechazo) {
+        it.appendChild(crear("p", "motivo", "Motivo: " + d.motivo_rechazo));
+      }
+
+      var base = "/api/admin/" + tipo + "/" + encodeURIComponent(d.id);
+      var ac = crear("div", "admin-acciones");
+      if (d.estado !== "aprobada") {
+        ac.appendChild(accion("Aprobar", "btn-ok", function () { return ejecutar("POST", base + "/aprobar"); }));
+      }
+      if (d.estado !== "rechazada") {
+        ac.appendChild(accion("Rechazar", "btn-no", function () {
+          var motivo = window.prompt("Motivo del rechazo (opcional, máx. 300 caracteres):", "");
+          if (motivo === null) { return Promise.resolve(); }
+          return ejecutar("POST", base + "/rechazar", { motivo: motivo.slice(0, 300) });
+        }));
+      }
+      ac.appendChild(accion("Eliminar", "btn-borrar", function () {
+        if (!window.confirm("¿Eliminar definitivamente? No se puede deshacer.")) { return Promise.resolve(); }
+        return ejecutar("DELETE", base);
+      }));
+      it.appendChild(ac);
+      return it;
+    }
+
+    function cargar() {
+      var estado = $("filtro").value;
+      var ruta = "/api/admin/" + tipo + (estado ? "?estado=" + encodeURIComponent(estado) : "");
+      return Promise.all([pedir("GET", "/api/admin/resumen"), pedir("GET", ruta)]).then(function (res) {
+        mostrarPanel();
+        pintarResumen(res[0]);
+        var items = Array.isArray(res[1]) ? res[1] : (res[1].items || []);
+        var lista = $("lista");
+        lista.textContent = "";
+        if (!items.length) { lista.appendChild(crear("p", "vacio", "No hay elementos con este filtro.")); }
+        items.forEach(function (d) { lista.appendChild(tarjeta(d)); });
+      }, errorPanel);
+    }
+
+    function cambiarTab(nuevo) {
+      tipo = nuevo;
+      $("tab-noticias").className = nuevo === "noticias" ? "activa" : "";
+      $("tab-opiniones").className = nuevo === "opiniones" ? "activa" : "";
+      $("tab-videos").className = nuevo === "videos" ? "activa" : "";
+      cargar();
+    }
+
+    $("form-acceso").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var v = $("clave").value;
+      if (!v) { return; }
+      guardarClave(v);
+      $("clave").value = "";
+      mensaje($("msg-acceso"), "Comprobando...", "");
+      cargar().then(function () { if (!$("acceso").hidden) { /* sigue en acceso: error mostrado */ } else { mensaje($("msg-acceso"), ""); } });
+    });
+    $("salir").addEventListener("click", function () { guardarClave(""); mostrarAcceso(); mensaje($("msg-acceso"), ""); });
+    $("tab-noticias").addEventListener("click", function () { cambiarTab("noticias"); });
+    $("tab-opiniones").addEventListener("click", function () { cambiarTab("opiniones"); });
+    $("tab-videos").addEventListener("click", function () { cambiarTab("videos"); });
+    $("filtro").addEventListener("change", cargar);
+    $("recargar").addEventListener("click", cargar);
+
+    if (clave) { cargar(); }
+  })();
+  </script>
+</body>
+</html>

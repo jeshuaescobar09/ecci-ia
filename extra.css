@@ -1,0 +1,175 @@
+
+
+
+[hidden] { display: none !important; }
+
+
+.trampa {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+
+.mensaje {
+  margin: 1rem 0 0;
+  padding: .8rem 1rem;
+  border-radius: 10px;
+  font-size: .92rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.mensaje:empty { display: none; }
+.mensaje.ok { background: #e3f7ec; color: #11633a; border: 1px solid #a8e0c1; }
+.mensaje.error { background: #fdeceb; color: #9b1c14; border: 1px solid #f3b4af; }
+
+
+.aviso-pagina {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: #fff4d6;
+  color: #6b4b00;
+  border-bottom: 2px solid #f0c75e;
+  text-align: center;
+  padding: .55rem 1rem;
+  font-size: .9rem;
+  font-weight: 600;
+}
+.aviso-pagina.error { background: #fdeceb; color: #9b1c14; border-color: #f3b4af; }
+
+
+.vacio {
+  margin: 0;
+  padding: 1.6rem 1rem;
+  text-align: center;
+  color: var(--gris);
+  background: var(--fondo);
+  border-radius: var(--radio);
+  font-weight: 600;
+}
+.grid-3 .vacio { grid-column: 1 / -1; }
+.scroll-noticias .vacio { flex: 1; }
+.vacio-claro { background: rgba(255, 255, 255, .08); color: #c7d9ea; }
+
+.con-foto::after { display: none; }
+
+body:has(.modal:target) { overflow: hidden; }
+
+.lector { width: min(760px, 100%); }
+.lector h2 { margin: .4rem 0 .5rem; padding-right: 2.2rem; }
+.lector .meta { margin: 0 0 1rem; }
+.lector img {
+  width: 100%;
+  max-height: 380px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 0 0 1.2rem;
+}
+.lector-texto p { white-space: pre-line; color: #2a3a52; font-size: 1.02rem; line-height: 1.7; }
+
+
+.grid-videos .vacio { grid-column: 1 / -1; }
+button.video-marco {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  background: var(--marino) center / cover no-repeat;
+}
+button.video-marco:focus-visible { outline: 3px solid var(--azul-ecci); outline-offset: 3px; }
+.con-miniatura::before { display: none; }
+.video-desc { margin: .2rem 0 .3rem; color: #2a3a52; font-size: .92rem; line-height: 1.5; overflow-wrap: anywhere; }
+.videos-pie { display: flex; justify-content: center; margin-top: 1.8rem; }
+
+
+.admin-main { padding-block: 2rem 4rem; }
+.admin-login {
+  max-width: 440px;
+  margin: 3rem auto;
+  background: var(--blanco);
+  padding: 2rem;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+.admin-login h1 { font: 800 1.7rem var(--fuente-titulo); color: var(--marino); margin-bottom: .5rem; }
+.admin-login p { color: var(--gris); font-size: .92rem; }
+.admin-login form { display: flex; flex-direction: column; }
+.admin-login .btn { margin-top: 1.2rem; }
+
+.admin-cabecera { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.4rem; }
+.admin-cabecera h1 { font: 800 clamp(1.5rem, 3vw, 2rem) var(--fuente-titulo); color: var(--marino); }
+
+.admin-resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; margin-bottom: 1.6rem; }
+.contador {
+  background: var(--blanco);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1rem 1.2rem;
+  border-left: 5px solid var(--azul-ecci);
+}
+.contador strong { display: block; font-size: 1.9rem; line-height: 1.1; color: var(--marino); }
+.contador span { color: var(--gris); font-size: .85rem; font-weight: 600; }
+.contador.alerta { border-left-color: var(--acento); }
+
+.admin-tabs { display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.admin-tabs button {
+  font: 700 .95rem var(--fuente);
+  padding: .6rem 1.2rem;
+  border-radius: 999px;
+  border: 2px solid var(--azul-ecci);
+  background: var(--blanco);
+  color: var(--azul-fuerte);
+  cursor: pointer;
+}
+.admin-tabs button.activa { background: var(--azul-fuerte); border-color: var(--azul-fuerte); color: #fff; }
+
+.admin-filtros { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.admin-filtros label { margin: 0; }
+.admin-filtros select { width: auto; min-width: 170px; }
+
+.admin-lista { display: flex; flex-direction: column; gap: 1rem; }
+.admin-item {
+  background: var(--blanco);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.2rem 1.3rem;
+  display: grid;
+  gap: .6rem;
+}
+.admin-item h3 { font: 700 1.15rem var(--fuente-titulo); color: var(--marino); }
+.admin-item p { margin: 0; color: #2a3a52; white-space: pre-line; overflow-wrap: anywhere; }
+.admin-item .meta { margin: 0; }
+.admin-item details summary { cursor: pointer; font-weight: 700; color: var(--azul-fuerte); }
+.admin-item details div { margin-top: .6rem; }
+.admin-item details p { margin-bottom: .8rem; }
+.admin-item img { max-width: 260px; max-height: 170px; border-radius: 10px; object-fit: cover; border: 1px solid var(--gris-claro); }
+.enlace-video { font-weight: 700; color: var(--azul-fuerte); justify-self: start; }
+.admin-etiquetas { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.estado {
+  font: 800 .7rem var(--fuente);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .25rem .6rem;
+  border-radius: 6px;
+}
+.estado.pendiente { background: #fff1c9; color: #7a5a00; }
+.estado.aprobada { background: #dff5e8; color: #11633a; }
+.estado.rechazada { background: #fdeceb; color: #9b1c14; }
+.motivo { background: #fdeceb; color: #9b1c14; padding: .5rem .8rem; border-radius: 8px; font-size: .9rem; }
+.admin-acciones { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .3rem; }
+.btn-ok { background: #1a9560; color: #fff; padding: .5rem 1.1rem; }
+.btn-ok:hover { background: #137a4e; }
+.btn-no { background: #fff; color: #b3261e; border-color: #e7aaa6; padding: .5rem 1.1rem; }
+.btn-no:hover { background: #fdeceb; }
+.btn-borrar { background: transparent; color: var(--gris); border-color: var(--gris-claro); padding: .5rem 1.1rem; }
+.btn-borrar:hover { color: #b3261e; border-color: #e7aaa6; }
+
+@media (max-width: 640px) {
+  .admin-item img { max-width: 100%; }
+  .admin-login { margin: 1.5rem auto; padding: 1.4rem; }
+}
