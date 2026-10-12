@@ -5,6 +5,7 @@ Aquí también están las listas de categorías y temas permitidos.
 """
 import os
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 from dotenv import load_dotenv
 
@@ -45,6 +46,19 @@ MAX_IMAGEN_MB = 5
 
 # --- Archivos subidos ---
 UPLOADS_DIR = Path(os.getenv("UPLOADS_DIR", str(BASE_DIR / "uploads")))
+
+# --- Imágenes en la nube (Cloudinary) ---
+# Formato: cloudinary://API_KEY:API_SECRET@CLOUD_NAME  (se copia del panel de Cloudinary)
+# Si está vacía, las imágenes se guardan en UPLOADS_DIR como siempre.
+_nube = urlsplit(os.getenv("CLOUDINARY_URL", "").strip())
+CLOUDINARY_CLOUD = (_nube.hostname or "") if _nube.scheme == "cloudinary" else ""
+CLOUDINARY_KEY = unquote(_nube.username or "") if CLOUDINARY_CLOUD else ""
+CLOUDINARY_SECRET = unquote(_nube.password or "") if CLOUDINARY_CLOUD else ""
+
+
+def usa_cloudinary():
+    return bool(CLOUDINARY_CLOUD and CLOUDINARY_KEY and CLOUDINARY_SECRET)
+
 
 # --- Servidor ---
 HOST = os.getenv("HOST", "127.0.0.1")

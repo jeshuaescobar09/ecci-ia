@@ -110,6 +110,7 @@
     function urlImagen(u) {
       if (typeof u !== "string") { return ""; }
       if (u.indexOf("/uploads/") === 0) { return API + u; }
+      if (/^https:\/\/res\.cloudinary\.com\/[\w-]+\/image\/upload\/[\w.\/-]+$/.test(u) && u.indexOf("..") === -1) { return u; }
       if (/^imagenes\/[\w.\-\/]+$/.test(u) && u.indexOf("..") === -1) { return u; }
       return "";
     }

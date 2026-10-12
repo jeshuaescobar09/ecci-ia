@@ -485,6 +485,52 @@ class PruebasAdmin(Base):
         self.assertTrue((config.FRONTEND_DIR / "imagenes" / "robot-ia.jpg").exists())
 
 
+class PruebasCloudinary(Base):
+    """Con CLOUDINARY_URL definida las imágenes van a la nube (aquí simulada, sin internet)."""
+
+    def setUp(self):
+        super().setUp()
+        import imagenes
+        self.imagenes = imagenes
+        self.llamadas = []
+        self.original = (imagenes._llamar_cloudinary, config.CLOUDINARY_CLOUD,
+                         config.CLOUDINARY_KEY, config.CLOUDINARY_SECRET)
+        config.CLOUDINARY_CLOUD, config.CLOUDINARY_KEY, config.CLOUDINARY_SECRET = "nube-prueba", "123", "secreto"
+
+        def falsa(accion, parametros, archivo=None):
+            self.llamadas.append((accion, parametros, archivo))
+            return {"secure_url": "https://res.cloudinary.com/nube-prueba/image/upload/v1/%s/%s.jpg"
+                    % (parametros.get("folder"), parametros.get("public_id"))}
+
+        imagenes._llamar_cloudinary = falsa
+
+    def tearDown(self):
+        (self.imagenes._llamar_cloudinary, config.CLOUDINARY_CLOUD,
+         config.CLOUDINARY_KEY, config.CLOUDINARY_SECRET) = self.original
+        super().tearDown()
+
+    def test_imagen_se_sube_a_la_nube_y_no_al_disco(self):
+        r = self.noticia(imagen=imagen_bytes("PNG"))
+        self.assertEqual(r.status_code, 201)
+        accion, parametros, archivo = self.llamadas[0]
+        self.assertEqual((accion, parametros["folder"]), ("upload", "ecci-ia"))
+        self.assertEqual(Image.open(io.BytesIO(archivo)).format, "JPEG")  # se limpia antes de subir
+        self.assertEqual(list(Path(UPLOADS).glob("*.jpg")), [])
+        doc = main.get_db().noticias.docs[0]
+        self.assertTrue(doc["imagen_url"].startswith("https://res.cloudinary.com/nube-prueba/"))
+
+    def test_eliminar_noticia_borra_la_imagen_de_la_nube(self):
+        id_ = self.noticia(imagen=imagen_bytes("PNG")).get_json()["id"]
+        public_id = "ecci-ia/" + self.llamadas[0][1]["public_id"]
+        self.assertEqual(self.admin("delete", "/api/admin/noticias/" + id_).status_code, 200)
+        self.assertEqual(self.llamadas[-1][:2], ("destroy", {"public_id": public_id}))
+
+    def test_firma_coincide_con_el_formato_de_cloudinary(self):
+        import hashlib
+        esperado = hashlib.sha1(b"folder=ecci-ia&timestamp=100secreto").hexdigest()
+        self.assertEqual(self.imagenes._firmar({"timestamp": "100", "folder": "ecci-ia"}), esperado)
+
+
 class PruebasSeguridadYArchivos(Base):
     def test_limite_de_envios_por_persona(self):
         main.limite_envios.limite = 2

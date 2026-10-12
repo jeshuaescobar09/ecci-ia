@@ -25,6 +25,7 @@
   function urlImagen(url) {
     if (typeof url !== "string") { return ""; }
     if (/^\/uploads\/[\w.-]+$/.test(url)) { return API + url; }
+    if (/^https:\/\/res\.cloudinary\.com\/[\w-]+\/image\/upload\/[\w.\/-]+$/.test(url) && url.indexOf("..") === -1) { return url; }
     if (/^imagenes\/[\w.\/-]+$/.test(url) && url.indexOf("..") === -1) { return url; }
     return "";
   }
