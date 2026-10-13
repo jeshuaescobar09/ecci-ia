@@ -67,6 +67,10 @@ class Base(unittest.TestCase):
         bd.noticias.docs.clear()
         bd.opiniones.docs.clear()
         bd.videos.docs.clear()
+        bd.comentarios.docs.clear()
+        bd.me_gusta.docs.clear()
+        main.limite_likes.reiniciar()
+        main.limite_likes.limite = 60
         main.limite_envios.reiniciar()
         main.limite_envios.limite = 1000
         main.limite_admin.reiniciar()
@@ -379,7 +383,10 @@ class PruebasOpiniones(Base):
         self.assertEqual(self.admin("post", "/api/admin/opiniones/%s/aprobar" % id_).status_code, 200)
         publicas = self.c.get("/api/opiniones").get_json()["items"]
         self.assertEqual(len(publicas), 1)
-        self.assertEqual(set(publicas[0]), {"id", "nombre", "tema", "texto", "fecha"})
+        self.assertEqual(
+            set(publicas[0]), {"id", "nombre", "tema", "texto", "fecha", "likes", "me_gusta", "comentarios"}
+        )
+        self.assertEqual((publicas[0]["likes"], publicas[0]["comentarios"]), (0, []))
 
     def test_rechazar_y_eliminar(self):
         id_ = self.opinion().get_json()["id"]
@@ -417,6 +424,100 @@ class PruebasOpiniones(Base):
             ids.append(id_)
         publicas = self.c.get("/api/opiniones").get_json()["items"]
         self.assertEqual([o["id"] for o in publicas], ids[::-1])
+
+
+VISITANTE = "a" * 32
+OTRO_VISITANTE = "b" * 32
+
+
+class PruebasLikesYComentarios(Base):
+    def opinion_aprobada(self):
+        id_ = self.opinion().get_json()["id"]
+        self.admin("post", "/api/admin/opiniones/%s/aprobar" % id_)
+        return id_
+
+    def like(self, id_, visitante=VISITANTE, metodo="post"):
+        return getattr(self.c, metodo)("/api/opiniones/%s/me-gusta" % id_, json={"visitante": visitante})
+
+    def comentar(self, id_, **cambios):
+        datos = {"nombre": "Sofía", "comentario": "Estoy de acuerdo contigo."}
+        datos.update(cambios)
+        return self.c.post("/api/opiniones/%s/comentarios" % id_, json=datos)
+
+    def publica(self, visitante=""):
+        return self.c.get("/api/opiniones?visitante=" + visitante).get_json()["items"][0]
+
+    def test_like_no_se_cuenta_dos_veces(self):
+        id_ = self.opinion_aprobada()
+        self.assertEqual(self.like(id_).get_json(), {"likes": 1, "me_gusta": True})
+        self.assertEqual(self.like(id_).get_json(), {"likes": 1, "me_gusta": True})
+        self.assertEqual(self.like(id_, OTRO_VISITANTE).get_json()["likes"], 2)
+        self.assertEqual(self.publica(VISITANTE)["me_gusta"], True)
+        self.assertEqual(self.publica()["me_gusta"], False)
+        self.assertEqual(self.publica()["likes"], 2)
+
+    def test_quitar_like(self):
+        id_ = self.opinion_aprobada()
+        self.like(id_)
+        self.assertEqual(self.like(id_, metodo="delete").get_json(), {"likes": 0, "me_gusta": False})
+        # quitarlo otra vez no deja el contador en negativo
+        self.assertEqual(self.like(id_, metodo="delete").get_json()["likes"], 0)
+        self.assertEqual(self.publica(VISITANTE)["me_gusta"], False)
+
+    def test_like_invalido(self):
+        id_ = self.opinion_aprobada()
+        self.assertEqual(self.like(id_, visitante="hola").status_code, 422)
+        self.assertEqual(self.c.post("/api/opiniones/%s/me-gusta" % id_, data="x").status_code, 400)
+        pendiente = self.opinion().get_json()["id"]
+        self.assertEqual(self.like(pendiente).status_code, 404)
+        self.assertEqual(self.like("zzz").status_code, 404)
+
+    def test_limite_de_likes(self):
+        id_ = self.opinion_aprobada()
+        main.limite_likes.limite = 2
+        self.like(id_)
+        self.like(id_, metodo="delete")
+        self.assertEqual(self.like(id_).status_code, 429)
+
+    def test_comentario_pasa_por_moderacion(self):
+        id_ = self.opinion_aprobada()
+        r = self.comentar(id_)
+        self.assertEqual(r.status_code, 201)
+        self.assertEqual(self.publica()["comentarios"], [])
+
+        pendientes = self.admin("get", "/api/admin/comentarios").get_json()["items"]
+        self.assertEqual(len(pendientes), 1)
+        self.assertEqual(pendientes[0]["opinion_id"], id_)
+        self.assertEqual(pendientes[0]["opinion"]["nombre"], "Luis")
+
+        self.admin("post", "/api/admin/comentarios/%s/aprobar" % r.get_json()["id"])
+        comentarios = self.publica()["comentarios"]
+        self.assertEqual([(c["nombre"], c["texto"]) for c in comentarios], [("Sofía", "Estoy de acuerdo contigo.")])
+        self.assertEqual(set(comentarios[0]), {"id", "nombre", "texto", "fecha"})
+
+    def test_comentarios_invalidos(self):
+        id_ = self.opinion_aprobada()
+        self.assertEqual(self.comentar(id_, comentario="").status_code, 422)
+        self.assertEqual(self.comentar(id_, comentario="x" * 501).status_code, 422)
+        self.assertEqual(self.comentar(id_, nombre="").status_code, 422)
+        self.assertEqual(self.comentar("b" * 24).status_code, 404)
+        pendiente = self.opinion().get_json()["id"]
+        self.assertEqual(self.comentar(pendiente).status_code, 404)
+        self.assertEqual(self.comentar(id_, sitio_web="spam").status_code, 201)
+        self.assertEqual(len(main.get_db().comentarios.docs), 0)
+
+    def test_borrar_opinion_borra_comentarios_y_likes(self):
+        id_ = self.opinion_aprobada()
+        self.comentar(id_)
+        self.like(id_)
+        self.admin("delete", "/api/admin/opiniones/" + id_)
+        self.assertEqual(len(main.get_db().comentarios.docs), 0)
+        self.assertEqual(len(main.get_db().me_gusta.docs), 0)
+
+    def test_resumen_incluye_comentarios(self):
+        self.comentar(self.opinion_aprobada())
+        resumen = self.admin("get", "/api/admin/resumen").get_json()
+        self.assertEqual(resumen["comentarios"], {"pendiente": 1, "aprobada": 0, "rechazada": 0})
 
 
 class PruebasAdmin(Base):

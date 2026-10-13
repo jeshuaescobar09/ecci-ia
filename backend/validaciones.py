@@ -139,3 +139,21 @@ def validar_opinion(campos):
         "tema": _de_lista(campos.get("tema"), "Tema", config.TEMAS_OPINION),
         "texto": _texto(campos.get("opinion"), "Tu opinión", 5, 1000),
     }
+
+
+def validar_comentario(campos):
+    return {
+        "nombre": _texto(campos.get("nombre"), "Nombre", 2, 40),
+        "texto": _texto(campos.get("comentario"), "Comentario", 2, 500),
+    }
+
+
+# Identificador anónimo que cada navegador inventa la primera vez (32 caracteres hexadecimales)
+_VISITANTE = re.compile(r"^[a-f0-9]{32}$")
+
+
+def validar_visitante(valor):
+    v = limpiar(valor).lower()
+    if not _VISITANTE.match(v):
+        raise ErrorValidacion("No se pudo registrar tu «me gusta». Recarga la página e inténtalo de nuevo.")
+    return v

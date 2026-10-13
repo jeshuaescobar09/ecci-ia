@@ -330,9 +330,134 @@
       cabecera.appendChild(hora);
       cuerpo.appendChild(cabecera);
       cuerpo.appendChild(crear("p", null, o.texto));
+
+      var respuestas = zonaDeComentarios(o);
+      var acciones = crear("footer", "acciones");
+      acciones.appendChild(botonMeGusta(o));
+      acciones.appendChild(botonComentarios(respuestas, (o.comentarios || []).length));
+      cuerpo.appendChild(acciones);
+      cuerpo.appendChild(respuestas);
       articulo.appendChild(cuerpo);
       hilo.appendChild(articulo);
     });
+  }
+
+  /* ---------- «Me gusta» y comentarios de las opiniones ---------- */
+  // Cada navegador inventa un identificador anónimo; el servidor lo usa para no contar dos veces el mismo «me gusta»
+  var visitante = null;
+  function idVisitante() {
+    if (visitante) { return visitante; }
+    try { visitante = localStorage.getItem("ecci_visitante"); } catch (e) { visitante = null; }
+    if (!/^[a-f0-9]{32}$/.test(visitante || "")) {
+      var bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      visitante = Array.from(bytes, function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+      try { localStorage.setItem("ecci_visitante", visitante); } catch (e) {}
+    }
+    return visitante;
+  }
+
+  function pintarMeGusta(boton, likes, meGusta) {
+    boton.textContent = "👍 " + likes;
+    boton.setAttribute("aria-pressed", meGusta ? "true" : "false");
+    boton.setAttribute("aria-label", (meGusta ? "Quitar me gusta" : "Me gusta") + " (" + likes + ")");
+    boton.classList.toggle("activo", meGusta);
+  }
+
+  function botonMeGusta(o) {
+    var boton = crear("button", "btn-accion");
+    boton.type = "button";
+    var meGusta = !!o.me_gusta;
+    pintarMeGusta(boton, o.likes || 0, meGusta);
+    boton.addEventListener("click", function () {
+      boton.disabled = true;
+      var opciones = comoJson({ visitante: idVisitante() });
+      opciones.method = meGusta ? "DELETE" : "POST";
+      pedir("/api/opiniones/" + encodeURIComponent(o.id) + "/me-gusta", opciones).then(
+        function (r) {
+          meGusta = r.me_gusta;
+          pintarMeGusta(boton, r.likes, meGusta);
+        },
+        function (e) { mostrarAviso(e.message, true, true); }
+      ).then(function () { boton.disabled = false; });
+    });
+    return boton;
+  }
+
+  function textoComentarios(n) {
+    return "💬 " + n + (n === 1 ? " comentario" : " comentarios");
+  }
+
+  function botonComentarios(zona, n) {
+    var boton = crear("button", "btn-accion", textoComentarios(n));
+    boton.type = "button";
+    boton.setAttribute("aria-expanded", "false");
+    boton.addEventListener("click", function () {
+      zona.hidden = !zona.hidden;
+      boton.setAttribute("aria-expanded", zona.hidden ? "false" : "true");
+    });
+    return boton;
+  }
+
+  function zonaDeComentarios(o) {
+    var zona = crear("div", "respuestas");
+    zona.hidden = true;
+
+    (o.comentarios || []).forEach(function (c) {
+      var item = crear("div", "respuesta");
+      var cabecera = document.createElement("header");
+      cabecera.appendChild(crear("strong", null, c.nombre));
+      var hora = crear("time", null, hace(c.fecha));
+      hora.setAttribute("datetime", c.fecha);
+      cabecera.appendChild(hora);
+      item.appendChild(cabecera);
+      item.appendChild(crear("p", null, c.texto));
+      zona.appendChild(item);
+    });
+
+    var formulario = crear("form", "form-comentario");
+    var idNombre = "c-nombre-" + o.id;
+    var idTexto = "c-texto-" + o.id;
+    var etiquetaNombre = crear("label", null, "Nombre");
+    etiquetaNombre.htmlFor = idNombre;
+    var nombre = document.createElement("input");
+    nombre.type = "text";
+    nombre.id = idNombre;
+    nombre.name = "nombre";
+    nombre.maxLength = 40;
+    nombre.required = true;
+    var etiquetaTexto = crear("label", null, "Tu comentario");
+    etiquetaTexto.htmlFor = idTexto;
+    var texto = document.createElement("textarea");
+    texto.id = idTexto;
+    texto.name = "comentario";
+    texto.rows = 2;
+    texto.maxLength = 500;
+    texto.required = true;
+    var boton = crear("button", "btn btn-primario", "Comentar");
+    boton.type = "submit";
+
+    formulario.appendChild(etiquetaNombre);
+    formulario.appendChild(nombre);
+    formulario.appendChild(etiquetaTexto);
+    formulario.appendChild(texto);
+    formulario.appendChild(boton);
+    insertarTrampa(formulario);
+    var mensaje = zonaDeMensaje(formulario, boton);
+
+    formulario.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var datos = {
+        nombre: nombre.value,
+        comentario: texto.value,
+        sitio_web: formulario.elements.sitio_web.value
+      };
+      enviar(formulario, mensaje, "/api/opiniones/" + encodeURIComponent(o.id) + "/comentarios", comoJson(datos), function () {
+        texto.value = "";
+      });
+    });
+    zona.appendChild(formulario);
+    return zona;
   }
 
   /* ---------- Videos (enlaces de YouTube) ---------- */
@@ -564,7 +689,7 @@
         if (e.estado === 404) { pintarUltima(null); return; }
         throw e;
       }),
-      pedir("/api/opiniones?limite=20").then(function (r) { pintarOpiniones(r.items); }),
+      pedir("/api/opiniones?limite=20&visitante=" + idVisitante()).then(function (r) { pintarOpiniones(r.items); }),
       pedir("/api/videos?limite=6").then(function (r) { pintarVideos(r.items); })
     ];
 

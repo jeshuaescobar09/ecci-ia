@@ -19,6 +19,10 @@ class PyMongoError(Exception):
     pass
 
 
+class DuplicateKeyError(PyMongoError):
+    pass
+
+
 class ObjectId:
     # Como en MongoDB real, cada _id nuevo es mayor que el anterior (sirve para desempatar orden)
     _contador = itertools.count(int(secrets.token_hex(4), 16) << 64)
@@ -54,8 +58,15 @@ class _Resultado:
         self.__dict__.update(datos)
 
 
+def _cumple(valor_doc, condicion):
+    # Solo el operador que usa el proyecto: {"campo": {"$in": [...]}}
+    if isinstance(condicion, dict) and "$in" in condicion:
+        return valor_doc in condicion["$in"]
+    return valor_doc == condicion
+
+
 def _coincide(doc, filtro):
-    return all(doc.get(clave) == valor for clave, valor in filtro.items())
+    return all(_cumple(doc.get(clave), valor) for clave, valor in filtro.items())
 
 
 def _clave_orden(clave):
@@ -99,6 +110,8 @@ class Coleccion:
 
     def insert_one(self, doc):
         doc.setdefault("_id", ObjectId())
+        if any(d["_id"] == doc["_id"] for d in self.docs):
+            raise DuplicateKeyError("_id repetido")
         self.docs.append(copy.deepcopy(doc))
         return _Resultado(inserted_id=doc["_id"])
 
@@ -124,6 +137,8 @@ class Coleccion:
         for doc in self.docs:
             if _coincide(doc, filtro):
                 doc.update(copy.deepcopy(cambios.get("$set", {})))
+                for campo, n in cambios.get("$inc", {}).items():
+                    doc[campo] = doc.get(campo, 0) + n
                 return _Resultado(matched_count=1, modified_count=1)
         return _Resultado(matched_count=0, modified_count=0)
 
@@ -194,6 +209,7 @@ def instalar():
     pymongo.MongoClient = MongoClient
     errores = types.ModuleType("pymongo.errors")
     errores.PyMongoError = PyMongoError
+    errores.DuplicateKeyError = DuplicateKeyError
     pymongo.errors = errores
 
     bson = types.ModuleType("bson")

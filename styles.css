@@ -6,8 +6,8 @@
 :root {
   --azul-ucr: #5bc0eb;
   --azul-ecci: #1fb6f0;
-  --azul-fuerte: #0b7fb8;
-  --marino: #0a2540;
+  --azul-fuerte: #34bbff;
+  --marino: #26507a;
   --marino-2: #10375e;
   --tinta: #14213d;
   --gris: #5d6b7e;
@@ -67,7 +67,7 @@ p { margin: 0 0 1em; }
 .btn-claro { background: #fff; color: var(--marino); }
 .btn-fantasma { background: transparent; color: var(--gris); border-color: var(--gris-claro); }
 .btn-nav { background: var(--acento); color: #fff; padding: .55rem 1.1rem; }
-.btn-nav:hover { background: #0b7fb8; }
+.btn-nav:hover { background: #54c6ff; }
 .btn-grande { padding: 1rem 2rem; font-size: 1.05rem; }
 
 /* ---------- Encabezado ---------- */
@@ -238,7 +238,7 @@ p { margin: 0 0 1em; }
 .mini:nth-child(7n+4) .mini-img { background: linear-gradient(135deg, #0a2540, #5bc0eb); }
 .mini:nth-child(7n+5) .mini-img { background: linear-gradient(135deg, #1fb6f0, #7b61ff); }
 .mini:nth-child(7n+6) .mini-img { background: linear-gradient(135deg, #14213d, #ff5a4f); }
-.mini:nth-child(7n+7) .mini-img { background: linear-gradient(135deg, #0b7fb8, #34d1a0); }
+.mini:nth-child(7n+7) .mini-img { background: linear-gradient(135deg, #14b1ff, #34d1a0); }
 
 .mini-cat, .mini strong, .mini small { padding-inline: 1.2rem; }
 .mini-cat { padding-top: .9rem; font: 700 .76rem var(--fuente); letter-spacing: .08em; text-transform: uppercase; color: var(--azul-fuerte); }
@@ -267,7 +267,7 @@ p { margin: 0 0 1em; }
     radial-gradient(circle at 80% 20%, rgba(255,255,255,.35) 0, transparent 40%),
     repeating-linear-gradient(135deg, rgba(255,255,255,.07) 0 12px, transparent 12px 24px);
 }
-.img-a { background: linear-gradient(135deg, #0b7fb8, #5bc0eb); }
+.img-a { background: linear-gradient(135deg, #26aef1, #5bc0eb); }
 .img-b { background: linear-gradient(135deg, #10375e, #1fb6f0); }
 .img-c { background: linear-gradient(135deg, #ff5a4f, #ffb14f); }
 
@@ -442,6 +442,29 @@ textarea { resize: vertical; }
 .comentario time { color: var(--gris); font-size: .8rem; margin-left: auto; }
 .comentario p { margin-bottom: .6rem; color: #2a3a52; }
 .acciones { display: flex; gap: 1.2rem; color: var(--gris); font-size: .85rem; }
+
+/* «Me gusta» y comentarios */
+.btn-accion {
+  font: 600 .85rem var(--fuente);
+  color: var(--gris);
+  background: none;
+  border: 1px solid var(--gris-claro);
+  border-radius: 999px;
+  padding: .3rem .8rem;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-accion:hover, .btn-accion:focus-visible { border-color: var(--azul-ecci); color: var(--marino); }
+.btn-accion.activo { background: #e1f4fc; border-color: var(--azul-ecci); color: var(--marino); }
+.btn-accion:disabled { opacity: .6; cursor: wait; }
+
+.respuestas { margin-top: 1rem; padding-left: 1rem; border-left: 3px solid var(--gris-claro); }
+.respuesta { margin-bottom: .9rem; }
+.respuesta header { margin-bottom: .2rem; }
+.respuesta p { margin: 0; }
+.form-comentario { display: flex; flex-direction: column; }
+.form-comentario label { margin-top: .5rem; }
+.form-comentario .btn { align-self: flex-start; margin-top: .7rem; }
 
 /* ---------- Nota de debate (cambia sola, estilo "notas") ---------- */
 .seccion-titulo p.debate {

@@ -4,8 +4,12 @@ Colecciones que usa el portal:
   noticias  -> titulo, resumen, contenido, categoria, autor, correo, imagen_url,
                estado (pendiente | aprobada | rechazada), motivo_rechazo,
                fecha_creacion, fecha_publicacion
-  opiniones -> nombre, tema, texto, estado, motivo_rechazo,
+  opiniones -> nombre, tema, texto, likes (contador), estado, motivo_rechazo,
                fecha_creacion, fecha_publicacion
+  comentarios -> opinion_id, nombre, texto, estado, motivo_rechazo,
+               fecha_creacion, fecha_publicacion
+  me_gusta  -> _id ("<opinion_id>:<visitante>", así nadie da like dos veces),
+               opinion_id, visitante, fecha
   videos    -> titulo, descripcion, categoria, autor, correo, youtube_id,
                estado, motivo_rechazo, fecha_creacion, fecha_publicacion
 """
@@ -43,6 +47,9 @@ def get_db():
         bd.opiniones.create_index([("estado", 1), ("fecha_creacion", -1)])
         bd.videos.create_index([("estado", 1), ("fecha_publicacion", -1)])
         bd.videos.create_index([("estado", 1), ("fecha_creacion", -1)])
+        bd.comentarios.create_index([("opinion_id", 1), ("estado", 1), ("fecha_publicacion", 1)])
+        bd.comentarios.create_index([("estado", 1), ("fecha_creacion", -1)])
+        bd.me_gusta.create_index([("opinion_id", 1)])
         _indices_listos = True
 
     return bd

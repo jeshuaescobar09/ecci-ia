@@ -6,14 +6,22 @@ from datetime import datetime, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
 from flask import Flask, abort, jsonify, request, send_from_directory
-from pymongo.errors import PyMongoError
+from pymongo.errors import DuplicateKeyError, PyMongoError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 import config
 from db import get_db
 from imagenes import ErrorImagen, borrar_imagen, guardar_imagen
 from limitador import Limitador
-from validaciones import ErrorValidacion, limpiar, validar_noticia, validar_opinion, validar_video
+from validaciones import (
+    ErrorValidacion,
+    limpiar,
+    validar_comentario,
+    validar_noticia,
+    validar_opinion,
+    validar_video,
+    validar_visitante,
+)
 
 app = Flask(__name__, static_folder=None)
 
@@ -26,13 +34,15 @@ app.json.ensure_ascii = False
 config.UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 limite_envios = Limitador(config.LIMITE_ENVIOS, config.VENTANA_ENVIOS)
-limite_admin = Limitador(10, 600)  
+limite_admin = Limitador(10, 600)
+limite_likes = Limitador(60, 600)  # dar y quitar «me gusta» es más frecuente que enviar textos
 
 MENSAJE_NOTICIA = "Recibimos tu noticia. Quedó pendiente de aprobación; la revisaremos antes de publicarla."
 MENSAJE_OPINION = "Gracias por opinar. Tu opinión se publicará cuando un moderador la apruebe."
 MENSAJE_VIDEO = "Recibimos tu video. Quedó pendiente de aprobación; lo revisaremos antes de publicarlo."
+MENSAJE_COMENTARIO = "Gracias por comentar. Tu comentario se publicará cuando un moderador lo apruebe."
 ESTADOS = ("pendiente", "aprobada", "rechazada")
-TIPOS = ("noticias", "opiniones", "videos")
+TIPOS = ("noticias", "opiniones", "videos", "comentarios")
 RECIENTES = [("fecha_publicacion", -1), ("_id", -1)]
 RECIBIDAS = [("fecha_creacion", -1), ("_id", -1)]
 
@@ -162,11 +172,23 @@ def _noticia_publica(doc, completa=False):
     return salida
 
 
-def _opinion_publica(doc):
+def _opinion_publica(doc, comentarios=(), me_gusta=False):
     return {
         "id": str(doc["_id"]),
         "nombre": doc.get("nombre", ""),
         "tema": doc.get("tema", ""),
+        "texto": doc.get("texto", ""),
+        "fecha": _iso(doc.get("fecha_publicacion")),
+        "likes": max(0, doc.get("likes", 0)),
+        "me_gusta": me_gusta,
+        "comentarios": [_comentario_publico(c) for c in comentarios],
+    }
+
+
+def _comentario_publico(doc):
+    return {
+        "id": str(doc["_id"]),
+        "nombre": doc.get("nombre", ""),
         "texto": doc.get("texto", ""),
         "fecha": _iso(doc.get("fecha_publicacion")),
     }
@@ -190,6 +212,8 @@ def _doc_admin(doc):
     for clave, valor in list(salida.items()):
         if isinstance(valor, datetime):
             salida[clave] = _iso(valor)
+        elif isinstance(valor, ObjectId):
+            salida[clave] = str(valor)
     return salida
 
 
@@ -280,8 +304,24 @@ def crear_noticia():
 @app.get("/api/opiniones")
 def listar_opiniones():
     limite = _entero(request.args.get("limite"), 20, 1, 50)
-    cursor = bd().opiniones.find({"estado": "aprobada"}).sort(RECIENTES).limit(limite)
-    return jsonify(items=[_opinion_publica(d) for d in cursor])
+    base = bd()
+    opiniones = list(base.opiniones.find({"estado": "aprobada"}).sort(RECIENTES).limit(limite))
+    ids = [o["_id"] for o in opiniones]
+
+    # Los comentarios aprobados de todas las opiniones, en una sola consulta (los más viejos primero)
+    por_opinion = {}
+    filtro = {"opinion_id": {"$in": ids}, "estado": "aprobada"}
+    for c in base.comentarios.find(filtro).sort([("fecha_publicacion", 1), ("_id", 1)]):
+        por_opinion.setdefault(c["opinion_id"], []).append(c)
+
+    # Si el navegador manda su identificador, marcamos las opiniones a las que ya les dio «me gusta»
+    mios = set()
+    visitante = limpiar(request.args.get("visitante")).lower()
+    if visitante:
+        claves = ["%s:%s" % (i, visitante) for i in ids]
+        mios = {m["opinion_id"] for m in base.me_gusta.find({"_id": {"$in": claves}})}
+
+    return jsonify(items=[_opinion_publica(o, por_opinion.get(o["_id"], []), o["_id"] in mios) for o in opiniones])
 
 
 @app.post("/api/opiniones")
@@ -305,6 +345,72 @@ def crear_opinion():
     resultado = col.insert_one(doc)
     limite_envios.registrar("opinion:" + _ip())
     return jsonify(mensaje=MENSAJE_OPINION, id=str(resultado.inserted_id)), 201
+
+
+def _opinion_aprobada(opinion_id):
+    oid = _oid(opinion_id)
+    if not bd().opiniones.find_one({"_id": oid, "estado": "aprobada"}):
+        raise ErrorApi(404, "Esa opinión no existe o ya no está publicada.")
+    return oid
+
+
+@app.post("/api/opiniones/<opinion_id>/comentarios")
+def crear_comentario(opinion_id):
+    campos = request.get_json(silent=True)
+    if not isinstance(campos, dict):
+        raise ErrorApi(400, "Datos no válidos.")
+    if limpiar(campos.get("sitio_web")):
+        return jsonify(mensaje=MENSAJE_COMENTARIO), 201
+
+    _limitar_envios("comentario")
+    datos = validar_comentario(campos)
+    oid = _opinion_aprobada(opinion_id)
+    doc = dict(
+        datos,
+        opinion_id=oid,
+        estado="pendiente",
+        motivo_rechazo=None,
+        fecha_creacion=_ahora(),
+        fecha_publicacion=None,
+    )
+    resultado = bd().comentarios.insert_one(doc)
+    limite_envios.registrar("comentario:" + _ip())
+    return jsonify(mensaje=MENSAJE_COMENTARIO, id=str(resultado.inserted_id)), 201
+
+
+def _cambiar_me_gusta(opinion_id, dar):
+    campos = request.get_json(silent=True)
+    if not isinstance(campos, dict):
+        raise ErrorApi(400, "Datos no válidos.")
+    if limite_likes.excedido(_ip()):
+        raise ErrorApi(429, "Vas muy rápido. Espera unos minutos e inténtalo de nuevo.")
+    visitante = validar_visitante(campos.get("visitante"))
+    oid = _opinion_aprobada(opinion_id)
+    limite_likes.registrar(_ip())
+
+    base = bd()
+    clave = "%s:%s" % (oid, visitante)
+    if dar:
+        try:
+            base.me_gusta.insert_one({"_id": clave, "opinion_id": oid, "visitante": visitante, "fecha": _ahora()})
+            base.opiniones.update_one({"_id": oid}, {"$inc": {"likes": 1}})
+        except DuplicateKeyError:
+            pass  # ya le había dado «me gusta»: no se cuenta dos veces
+    elif base.me_gusta.delete_one({"_id": clave}).deleted_count:
+        base.opiniones.update_one({"_id": oid}, {"$inc": {"likes": -1}})
+
+    likes = base.opiniones.find_one({"_id": oid}).get("likes", 0)
+    return jsonify(likes=max(0, likes), me_gusta=dar)
+
+
+@app.post("/api/opiniones/<opinion_id>/me-gusta")
+def dar_me_gusta(opinion_id):
+    return _cambiar_me_gusta(opinion_id, True)
+
+
+@app.delete("/api/opiniones/<opinion_id>/me-gusta")
+def quitar_me_gusta(opinion_id):
+    return _cambiar_me_gusta(opinion_id, False)
 
 
 @app.get("/api/videos")
@@ -390,8 +496,15 @@ def admin_listar(tipo):
         raise ErrorApi(422, "Estado no válido.")
     limite = _entero(request.args.get("limite"), 100, 1, 200)
     filtro = {} if estado == "todas" else {"estado": estado}
-    cursor = col.find(filtro).sort(RECIBIDAS).limit(limite)
-    return jsonify(items=[_doc_admin(d) for d in cursor])
+    items = [_doc_admin(d) for d in col.find(filtro).sort(RECIBIDAS).limit(limite)]
+    if tipo == "comentarios":
+        # El moderador necesita ver a qué opinión responde cada comentario
+        ids = list({_oid(c["opinion_id"]) for c in items if c.get("opinion_id")})
+        opiniones = {str(o["_id"]): o for o in bd().opiniones.find({"_id": {"$in": ids}})}
+        for c in items:
+            o = opiniones.get(c.get("opinion_id"))
+            c["opinion"] = {"nombre": o.get("nombre", ""), "texto": o.get("texto", "")} if o else None
+    return jsonify(items=items)
 
 
 @app.post("/api/admin/<tipo>/<item_id>/aprobar")
@@ -437,6 +550,10 @@ def admin_eliminar(tipo, item_id):
         raise ErrorApi(404, "No encontrado.")
     if tipo == "noticias":
         borrar_imagen(doc.get("imagen_url"))
+    if tipo == "opiniones":
+        # Sin la opinión, sus comentarios y «me gusta» ya no tienen dónde mostrarse
+        bd().comentarios.delete_many({"opinion_id": doc["_id"]})
+        bd().me_gusta.delete_many({"opinion_id": doc["_id"]})
     return jsonify(ok=True)
 
 

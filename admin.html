@@ -49,6 +49,7 @@
         <button type="button" id="tab-noticias" class="activa" role="tab">Noticias</button>
         <button type="button" id="tab-opiniones" role="tab">Opiniones</button>
         <button type="button" id="tab-videos" role="tab">Videos</button>
+        <button type="button" id="tab-comentarios" role="tab">Comentarios</button>
       </div>
 
       <div class="admin-filtros">
@@ -166,7 +167,9 @@
         ["Opiniones pendientes", (r.opiniones || {}).pendiente, true],
         ["Opiniones aprobadas", (r.opiniones || {}).aprobada, false],
         ["Videos pendientes", (r.videos || {}).pendiente, true],
-        ["Videos aprobados", (r.videos || {}).aprobada, false]
+        ["Videos aprobados", (r.videos || {}).aprobada, false],
+        ["Comentarios pendientes", (r.comentarios || {}).pendiente, true],
+        ["Comentarios aprobados", (r.comentarios || {}).aprobada, false]
       ];
       partes.forEach(function (p) {
         var n = p[1] || 0;
@@ -227,8 +230,14 @@
           ver.rel = "noopener noreferrer";
           it.appendChild(ver);
         }
-      } else {
+      } else if (tipo === "comentarios") {
         it.appendChild(crear("p", "meta", d.nombre + " · " + fecha(d.fecha_creacion)));
+        it.appendChild(crear("p", "", d.texto));
+        var origen = d.opinion ? "Responde a " + d.opinion.nombre + ": «" + d.opinion.texto + "»" : "La opinión original ya no existe.";
+        it.appendChild(crear("p", "meta", origen));
+      } else {
+        var pie = d.nombre + " · " + fecha(d.fecha_creacion) + (d.likes ? " · 👍 " + d.likes : "");
+        it.appendChild(crear("p", "meta", pie));
         it.appendChild(crear("p", "", d.texto));
       }
 
@@ -275,6 +284,7 @@
       $("tab-noticias").className = nuevo === "noticias" ? "activa" : "";
       $("tab-opiniones").className = nuevo === "opiniones" ? "activa" : "";
       $("tab-videos").className = nuevo === "videos" ? "activa" : "";
+      $("tab-comentarios").className = nuevo === "comentarios" ? "activa" : "";
       cargar();
     }
 
@@ -291,6 +301,7 @@
     $("tab-noticias").addEventListener("click", function () { cambiarTab("noticias"); });
     $("tab-opiniones").addEventListener("click", function () { cambiarTab("opiniones"); });
     $("tab-videos").addEventListener("click", function () { cambiarTab("videos"); });
+    $("tab-comentarios").addEventListener("click", function () { cambiarTab("comentarios"); });
     $("filtro").addEventListener("change", cargar);
     $("recargar").addEventListener("click", cargar);
 
