@@ -365,11 +365,20 @@ def _coleccion(tipo):
     return bd()[tipo]
 
 
+def _contar_por_estado(col):
+    # Una sola consulta por colección (antes eran tres: una por estado)
+    conteo = dict.fromkeys(ESTADOS, 0)
+    for fila in col.aggregate([{"$group": {"_id": "$estado", "n": {"$sum": 1}}}]):
+        if fila["_id"] in conteo:
+            conteo[fila["_id"]] = fila["n"]
+    return conteo
+
+
 @app.get("/api/admin/resumen")
 @requiere_admin
 def admin_resumen():
     base = bd()
-    return jsonify({t: {e: base[t].count_documents({"estado": e}) for e in ESTADOS} for t in TIPOS})
+    return jsonify({t: _contar_por_estado(base[t]) for t in TIPOS})
 
 
 @app.get("/api/admin/<tipo>")
@@ -410,13 +419,12 @@ def admin_rechazar(tipo, item_id):
     motivo = limpiar(cuerpo.get("motivo")) if isinstance(cuerpo, dict) else ""
     if len(motivo) > 300:
         raise ErrorApi(422, "El motivo es muy largo (máximo 300 caracteres).")
-    doc = col.find_one({"_id": oid})
-    if not doc:
-        raise ErrorApi(404, "No encontrado.")
-    col.update_one(
+    resultado = col.update_one(
         {"_id": oid},
         {"$set": {"estado": "rechazada", "fecha_publicacion": None, "motivo_rechazo": motivo or None}},
     )
+    if not resultado.matched_count:
+        raise ErrorApi(404, "No encontrado.")
     return jsonify(ok=True, estado="rechazada")
 
 
@@ -424,11 +432,9 @@ def admin_rechazar(tipo, item_id):
 @requiere_admin
 def admin_eliminar(tipo, item_id):
     col = _coleccion(tipo)
-    oid = _oid(item_id)
-    doc = col.find_one({"_id": oid})
+    doc = col.find_one_and_delete({"_id": _oid(item_id)})
     if not doc:
         raise ErrorApi(404, "No encontrado.")
-    col.delete_one({"_id": oid})
     if tipo == "noticias":
         borrar_imagen(doc.get("imagen_url"))
     return jsonify(ok=True)
@@ -460,7 +466,8 @@ def archivo_publico(nombre):
 
 @app.get("/imagenes/<path:ruta>")
 def imagenes_del_sitio(ruta):
-    return send_from_directory(config.FRONTEND_DIR / "imagenes", ruta)
+    # Los logos y fotos casi no cambian: el navegador los guarda un día
+    return send_from_directory(config.FRONTEND_DIR / "imagenes", ruta, max_age=86400)
 
 
 @app.get("/uploads/<nombre>")

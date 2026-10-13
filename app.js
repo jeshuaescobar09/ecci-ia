@@ -201,6 +201,20 @@
   }
 
   /* ---------- Pintar contenido ---------- */
+  // Fecha legible para personas y en formato ISO para máquinas (<time datetime>)
+  function fecha(texto, iso) {
+    var hora = crear("time", null, texto);
+    if (iso) { hora.setAttribute("datetime", iso); }
+    return hora;
+  }
+
+  // Pie de la noticia: "Por autor · fecha"
+  function firma(clase, autor, iso) {
+    var pie = crear("footer", clase, "Por " + autor + " · ");
+    pie.appendChild(fecha(fechaCorta(iso), iso));
+    return pie;
+  }
+
   function pintarMas(lista) {
     var pista = document.querySelector(".scroll-noticias");
     if (!pista) { return; }
@@ -217,7 +231,9 @@
       tarjeta.appendChild(imagen);
       tarjeta.appendChild(crear("span", "mini-cat", n.categoria));
       tarjeta.appendChild(crear("strong", null, n.titulo));
-      tarjeta.appendChild(crear("small", null, hace(n.fecha)));
+      var cuando = crear("small");
+      cuando.appendChild(fecha(hace(n.fecha), n.fecha));
+      tarjeta.appendChild(cuando);
       enlaceALector(tarjeta, n.id);
       pista.appendChild(tarjeta);
     });
@@ -235,8 +251,7 @@
     lista.forEach(function (n, i) {
       var tarjeta = crear("article", "tarjeta");
       var imagen = crear("div", "tarjeta-img " + DEGRADADOS[i % DEGRADADOS.length]);
-      imagen.setAttribute("role", "img");
-      imagen.setAttribute("aria-label", "Imagen de la noticia");
+      imagen.setAttribute("aria-hidden", "true");
       fondoImagen(imagen, n.imagen_url);
 
       var cuerpo = crear("div", "tarjeta-cuerpo");
@@ -247,7 +262,7 @@
       titulo.appendChild(enlace);
       cuerpo.appendChild(titulo);
       cuerpo.appendChild(crear("p", null, n.resumen));
-      cuerpo.appendChild(crear("div", "meta", "Por " + n.autor + " · " + fechaCorta(n.fecha)));
+      cuerpo.appendChild(firma("meta", n.autor, n.fecha));
 
       tarjeta.appendChild(imagen);
       tarjeta.appendChild(cuerpo);
@@ -283,7 +298,7 @@
     texto.appendChild(crear("p", "bajada", n.resumen));
     var primero = parrafos(n.contenido)[0];
     if (primero) { texto.appendChild(crear("p", null, primero)); }
-    texto.appendChild(crear("div", "meta meta-clara", "Por " + n.autor + " · " + fechaCorta(n.fecha)));
+    texto.appendChild(firma("meta meta-clara", n.autor, n.fecha));
     var boton = crear("a", "btn btn-claro", "Leer noticia completa");
     enlaceALector(boton, n.id);
     texto.appendChild(boton);
@@ -301,7 +316,9 @@
     lista.forEach(function (o, i) {
       var articulo = crear("article", "comentario");
       var clase = "avatar" + (i % 3 === 1 ? " av2" : (i % 3 === 2 ? " av3" : ""));
-      articulo.appendChild(crear("div", clase, Array.from(o.nombre || "?")[0].toUpperCase()));
+      var avatar = crear("div", clase, Array.from(o.nombre || "?")[0].toUpperCase());
+      avatar.setAttribute("aria-hidden", "true");
+      articulo.appendChild(avatar);
 
       var cuerpo = crear("div", "comentario-cuerpo");
       var cabecera = document.createElement("header");
@@ -418,7 +435,6 @@
 
     formulario.addEventListener("submit", function (e) {
       e.preventDefault();
-      var boton = formulario.querySelector('button[type="submit"]');
       var el = formulario.elements;
       var datos = {
         autor: el.autor.value,
@@ -430,25 +446,9 @@
         acepta: el.acepta.checked ? "on" : "",
         sitio_web: el.sitio_web ? el.sitio_web.value : ""
       };
-      var textoBoton = boton.textContent;
-      boton.disabled = true;
-      boton.textContent = "Enviando…";
-      escribirMensaje(zona, "", "");
-
-      pedir("/api/videos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datos)
-      }).then(
-        function (r) {
-          escribirMensaje(zona, r.mensaje, "ok");
-          formulario.reset();
-          setTimeout(function () { if (location.hash === "#subir-video") { cerrarVentana(); } }, 4500);
-        },
-        function (err) { escribirMensaje(zona, err.message, "error"); }
-      ).then(function () {
-        boton.disabled = false;
-        boton.textContent = textoBoton;
+      enviar(formulario, zona, "/api/videos", comoJson(datos), function () {
+        formulario.reset();
+        cerrarLuego("#subir-video");
       });
     });
   }
@@ -480,6 +480,39 @@
     zona.className = "mensaje " + tipo;
   }
 
+  function comoJson(datos) {
+    return {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos)
+    };
+  }
+
+  // Cierra la ventana unos segundos después, si la persona no la cerró antes
+  function cerrarLuego(hash) {
+    setTimeout(function () { if (location.hash === hash) { cerrarVentana(); } }, 4500);
+  }
+
+  // Envía un formulario: bloquea el botón mientras espera y muestra la respuesta
+  function enviar(formulario, zona, ruta, opciones, alTerminar) {
+    var boton = formulario.querySelector('button[type="submit"]');
+    var textoBoton = boton.textContent;
+    boton.disabled = true;
+    boton.textContent = "Enviando…";
+    escribirMensaje(zona, "", "");
+
+    pedir(ruta, opciones).then(
+      function (r) {
+        escribirMensaje(zona, r.mensaje, "ok");
+        alTerminar();
+      },
+      function (err) { escribirMensaje(zona, err.message, "error"); }
+    ).then(function () {
+      boton.disabled = false;
+      boton.textContent = textoBoton;
+    });
+  }
+
   function prepararFormularioNoticia() {
     var formulario = document.querySelector("#subir form");
     if (!formulario) { return; }
@@ -488,27 +521,14 @@
 
     formulario.addEventListener("submit", function (e) {
       e.preventDefault();
-      var boton = formulario.querySelector('button[type="submit"]');
       var archivo = formulario.querySelector('input[type="file"]');
       if (archivo && archivo.files[0] && archivo.files[0].size > 5 * 1024 * 1024) {
         escribirMensaje(zona, "La imagen supera los 5 MB. Elige una más liviana.", "error");
         return;
       }
-      var textoBoton = boton.textContent;
-      boton.disabled = true;
-      boton.textContent = "Enviando…";
-      escribirMensaje(zona, "", "");
-
-      pedir("/api/noticias", { method: "POST", body: new FormData(formulario) }).then(
-        function (r) {
-          escribirMensaje(zona, r.mensaje, "ok");
-          formulario.reset();
-          setTimeout(function () { if (location.hash === "#subir") { cerrarVentana(); } }, 4500);
-        },
-        function (err) { escribirMensaje(zona, err.message, "error"); }
-      ).then(function () {
-        boton.disabled = false;
-        boton.textContent = textoBoton;
+      enviar(formulario, zona, "/api/noticias", { method: "POST", body: new FormData(formulario) }, function () {
+        formulario.reset();
+        cerrarLuego("#subir");
       });
     });
   }
@@ -522,31 +542,15 @@
 
     formulario.addEventListener("submit", function (e) {
       e.preventDefault();
-      var boton = formulario.querySelector('button[type="submit"]');
+      var el = formulario.elements;
       var datos = {
-        nombre: formulario.elements.nombre.value,
-        tema: formulario.elements.tema.value,
-        opinion: formulario.elements.opinion.value,
-        sitio_web: formulario.elements.sitio_web ? formulario.elements.sitio_web.value : ""
+        nombre: el.nombre.value,
+        tema: el.tema.value,
+        opinion: el.opinion.value,
+        sitio_web: el.sitio_web ? el.sitio_web.value : ""
       };
-      var textoBoton = boton.textContent;
-      boton.disabled = true;
-      boton.textContent = "Enviando…";
-      escribirMensaje(zona, "", "");
-
-      pedir("/api/opiniones", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datos)
-      }).then(
-        function (r) {
-          escribirMensaje(zona, r.mensaje, "ok");
-          formulario.elements.opinion.value = "";
-        },
-        function (err) { escribirMensaje(zona, err.message, "error"); }
-      ).then(function () {
-        boton.disabled = false;
-        boton.textContent = textoBoton;
+      enviar(formulario, zona, "/api/opiniones", comoJson(datos), function () {
+        el.opinion.value = "";
       });
     });
   }

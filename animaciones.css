@@ -28,7 +28,6 @@
     translate .35s ease,
     box-shadow .35s ease;
   transition-delay: var(--retraso, 0ms), var(--retraso, 0ms), var(--retraso, 0ms), 0s, 0s;
-  will-change: opacity, transform;
 }
 
 .anim-subir     { transform: translateY(40px); }

@@ -134,6 +134,12 @@ class Coleccion:
                 return _Resultado(deleted_count=1)
         return _Resultado(deleted_count=0)
 
+    def find_one_and_delete(self, filtro):
+        for i, doc in enumerate(self.docs):
+            if _coincide(doc, filtro):
+                return copy.deepcopy(self.docs.pop(i))
+        return None
+
     def delete_many(self, filtro):
         antes = len(self.docs)
         self.docs = [d for d in self.docs if not _coincide(d, filtro)]
@@ -146,6 +152,13 @@ class Coleccion:
                 docs = [d for d in docs if _coincide(d, etapa["$match"])]
             elif "$sample" in etapa:
                 docs = random.sample(docs, min(etapa["$sample"]["size"], len(docs)))
+            elif "$group" in etapa:
+                # Solo lo que usa el proyecto: {"_id": "$campo", "n": {"$sum": 1}}
+                campo = etapa["$group"]["_id"].lstrip("$")
+                grupos = {}
+                for d in docs:
+                    grupos[d.get(campo)] = grupos.get(d.get(campo), 0) + 1
+                docs = [{"_id": k, "n": n} for k, n in grupos.items()]
             else:
                 raise NotImplementedError(etapa)
         return iter(docs)

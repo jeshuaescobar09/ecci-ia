@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ECCI Noticias IA | Portal de inteligencia artificial de la ECCI</title>
   <meta name="description" content="Portal de noticias sobre inteligencia artificial de la Escuela de Ciencias de la Computación e Informática (ECCI), UCR.">
+  <link rel="preconnect" href="https://i.ytimg.com">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="extra.css">
   <link rel="stylesheet" href="animaciones.css">
@@ -15,7 +16,7 @@
   <header class="site-header">
     <div class="contenedor header-fila">
       <a class="marca" href="#inicio" aria-label="ECCI Noticias IA, inicio">
-        <img src="imagenes/logo-ecci.jpg" alt="Logo ECCI, Escuela de Ciencias de la Computación e Informática" class="logo logo-ecci">
+        <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI, Escuela de Ciencias de la Computación e Informática" class="logo logo-ecci" width="58" height="58">
         <span class="marca-texto">
           <strong>ECCI<span>.IA</span></strong>
           <small>Noticias de inteligencia artificial</small>
@@ -30,7 +31,7 @@
         <a href="#subir" class="btn btn-nav">+ Subir noticia</a>
       </nav>
 
-      <img src="imagenes/logo-ucr.png" alt="Logo Universidad de Costa Rica" class="logo logo-ucr">
+      <img src="imagenes/logo-ucr-124.png" alt="Logo Universidad de Costa Rica" class="logo logo-ucr" width="62" height="46">
     </div>
   </header>
 
@@ -57,15 +58,15 @@
     <!-- ========== PRINCIPAL ========== -->
     <section class="seccion" id="principal">
       <div class="contenedor">
-        <div class="seccion-titulo">
+        <header class="seccion-titulo">
           <h2>Lo principal</h2>
           <p>Las noticias que están moviendo la ECCI</p>
-        </div>
+        </header>
 
         <!-- Franja con scroll horizontal: más noticias -->
-        <div class="mas-noticias">
+        <section class="mas-noticias" aria-labelledby="mas-noticias-titulo">
           <div class="mas-noticias-cabecera">
-            <h3>Más noticias</h3>
+            <h3 id="mas-noticias-titulo">Más noticias</h3>
             <div class="mas-noticias-controles">
               <span class="pista-scroll">Desliza o usa las flechas</span>
               <button type="button" class="flecha" data-dir="-1" aria-label="Noticias anteriores">←</button>
@@ -116,37 +117,37 @@
               <small>Hace 4 días</small>
             </a>
           </div>
-        </div>
+        </section>
 
         <!-- 3 noticias principales -->
         <div class="grid-3">
           <article class="tarjeta">
-            <div class="tarjeta-img img-a" role="img" aria-label="Ilustración de la noticia"></div>
+            <div class="tarjeta-img img-a" aria-hidden="true"></div>
             <div class="tarjeta-cuerpo">
               <span class="etiqueta">Big Data</span>
               <h3><a href="#principal">Datos que hablan: la ECCI enseña a convertir millones de registros en decisiones</a></h3>
               <p>Estudiantes de Bases de Datos y Análisis de Datos muestran cómo la visualización transforma cifras en historias claras.</p>
-              <div class="meta">Por Redacción ECCI · 6 oct 2026</div>
+              <footer class="meta">Por Redacción ECCI · <time datetime="2026-10-06">6 oct 2026</time></footer>
             </div>
           </article>
 
           <article class="tarjeta">
-            <div class="tarjeta-img img-b" role="img" aria-label="Ilustración de la noticia"></div>
+            <div class="tarjeta-img img-b" aria-hidden="true"></div>
             <div class="tarjeta-cuerpo">
               <span class="etiqueta">Lenguaje natural</span>
               <h3><a href="#principal">¿Pueden las máquinas entendernos? Los chatbots universitarios dan sus primeros pasos</a></h3>
               <p>El Procesamiento de Lenguaje Natural llega a las aulas con prácticas reales y modelos que corren en equipos locales.</p>
-              <div class="meta">Por Redacción ECCI · 5 oct 2026</div>
+              <footer class="meta">Por Redacción ECCI · <time datetime="2026-10-05">5 oct 2026</time></footer>
             </div>
           </article>
 
           <article class="tarjeta">
-            <div class="tarjeta-img img-c" role="img" aria-label="Ilustración de la noticia"></div>
+            <div class="tarjeta-img img-c" aria-hidden="true"></div>
             <div class="tarjeta-cuerpo">
               <span class="etiqueta">Inclusión</span>
               <h3><a href="#principal">Tecnología sin barreras: proyectos de voz abren la computadora a más personas</a></h3>
               <p>Una nueva generación de aplicaciones busca que el control de un computador sea posible para personas con discapacidad motora.</p>
-              <div class="meta">Por Redacción ECCI · 3 oct 2026</div>
+              <footer class="meta">Por Redacción ECCI · <time datetime="2026-10-03">3 oct 2026</time></footer>
             </div>
           </article>
         </div>
@@ -156,14 +157,14 @@
     <!-- ========== ÚLTIMA NOTICIA ========== -->
     <section class="seccion seccion-oscura" id="ultima">
       <div class="contenedor">
-        <div class="seccion-titulo claro">
+        <header class="seccion-titulo claro">
           <h2>Última noticia</h2>
           <p>Lo más reciente, directo desde la ECCI</p>
-        </div>
+        </header>
 
         <article class="ultima">
           <figure class="ultima-foto">
-            <img src="imagenes/robot-ia.jpg" alt="Estudiantes de la ECCI rodean a un robot humanoide en el vestíbulo de la escuela">
+            <img src="imagenes/robot-ia.jpg" loading="lazy" decoding="async" alt="Estudiantes de la ECCI rodean a un robot humanoide en el vestíbulo de la escuela">
             <figcaption>Estudiantes de la ECCI interactúan con un robot humanoide durante la actividad.</figcaption>
           </figure>
 
@@ -180,7 +181,7 @@
               se acercaron a conocer de cerca un robot humanoide y las tecnologías que lo hacen posible. La iniciativa
               busca acercar la IA a toda la comunidad universitaria y fomentar el debate sobre su uso responsable.
             </p>
-            <div class="meta meta-clara">Por Redacción ECCI · 8 oct 2026</div>
+            <footer class="meta meta-clara">Por Redacción ECCI · <time datetime="2026-10-08">8 oct 2026</time></footer>
             <a href="#ultima" class="btn btn-claro">Leer noticia completa</a>
           </div>
         </article>
@@ -190,10 +191,10 @@
     <!-- ========== VIDEOS ========== -->
     <section class="seccion" id="videos">
       <div class="contenedor">
-        <div class="seccion-titulo">
+        <header class="seccion-titulo">
           <h2>Videos</h2>
           <p>Charlas, demostraciones y proyectos en movimiento</p>
-        </div>
+        </header>
 
         <div class="grid-videos">
           <!-- Para usar un video real, reemplaza el <a class="video-marco"> por:
@@ -201,28 +202,28 @@
           <article class="video">
             <a class="video-marco v-a" href="#videos" aria-label="Reproducir video: Demostración del robot en la ECCI">
               <span class="play" aria-hidden="true"></span>
-              <span class="duracion">03:25</span>
+              <time class="duracion" datetime="PT3M25S">03:25</time>
             </a>
             <h3>Demostración del robot humanoide en la ECCI</h3>
-            <p class="meta">Evento · 8 oct 2026</p>
+            <p class="meta">Evento · <time datetime="2026-10-08">8 oct 2026</time></p>
           </article>
 
           <article class="video">
             <a class="video-marco v-b" href="#videos" aria-label="Reproducir video: Asistente de voz para control de PC">
               <span class="play" aria-hidden="true"></span>
-              <span class="duracion">06:10</span>
+              <time class="duracion" datetime="PT6M10S">06:10</time>
             </a>
             <h3>Asistente de voz: controla tu PC sin las manos</h3>
-            <p class="meta">Proyecto estudiantil · 2 oct 2026</p>
+            <p class="meta">Proyecto estudiantil · <time datetime="2026-10-02">2 oct 2026</time></p>
           </article>
 
           <article class="video">
             <a class="video-marco v-c" href="#videos" aria-label="Reproducir video: Introducción a Big Data">
               <span class="play" aria-hidden="true"></span>
-              <span class="duracion">12:45</span>
+              <time class="duracion" datetime="PT12M45S">12:45</time>
             </a>
             <h3>Big Data en 10 minutos: de los datos al insight</h3>
-            <p class="meta">Charla · 28 sep 2026</p>
+            <p class="meta">Charla · <time datetime="2026-09-28">28 sep 2026</time></p>
           </article>
         </div>
       </div>
@@ -231,14 +232,14 @@
     <!-- ========== OPINIÓN (FORO) ========== -->
     <section class="seccion seccion-suave" id="opinion">
       <div class="contenedor">
-        <div class="seccion-titulo">
+        <header class="seccion-titulo">
           <h2>Opinión</h2>
           <p class="debate">
             <span class="debate-etiqueta">Debate abierto</span>
             <span class="debate-tema" id="tema-debate" aria-live="off">¿La IA es aliada o amenaza para la universidad?</span>
             
           </p>
-        </div>
+        </header>
 
         <div class="foro">
           <!-- Formulario para opinar (se conectará a la base de datos) -->
@@ -263,48 +264,48 @@
           </form>
 
           <!-- Hilo de comentarios -->
-          <div class="hilo">
+          <section class="hilo" aria-label="Opiniones publicadas">
             <article class="comentario">
-              <div class="avatar">M</div>
+              <div class="avatar" aria-hidden="true">M</div>
               <div class="comentario-cuerpo">
                 <header><strong>María</strong> <span class="tema">La IA en las aulas</span> <time>Hace 1 h</time></header>
                 <p>Creo que la IA debe usarse como herramienta de apoyo, nunca para reemplazar el aprendizaje. Lo importante es entender qué hace por dentro.</p>
-                <div class="acciones"><span>👍 12</span><span>💬 3 respuestas</span></div>
+                <footer class="acciones"><span>👍 12</span><span>💬 3 respuestas</span></footer>
               </div>
             </article>
 
             <article class="comentario">
-              <div class="avatar av2">D</div>
+              <div class="avatar av2" aria-hidden="true">D</div>
               <div class="comentario-cuerpo">
                 <header><strong>Diego</strong> <span class="tema">Futuro laboral</span> <time>Hace 3 h</time></header>
                 <p>Los perfiles que sepan trabajar con datos y modelos van a tener mucha ventaja. La ECCI nos está preparando para eso.</p>
-                <div class="acciones"><span>👍 8</span><span>💬 1 respuesta</span></div>
+                <footer class="acciones"><span>👍 8</span><span>💬 1 respuesta</span></footer>
               </div>
             </article>
 
             <article class="comentario">
-              <div class="avatar av3">A</div>
+              <div class="avatar av3" aria-hidden="true">A</div>
               <div class="comentario-cuerpo">
                 <header><strong>Andrea</strong> <span class="tema">Ética y uso responsable</span> <time>Ayer</time></header>
                 <p>Falta hablar más de privacidad y sesgos. Una IA es tan justa como los datos con los que aprende.</p>
-                <div class="acciones"><span>👍 15</span><span>💬 5 respuestas</span></div>
+                <footer class="acciones"><span>👍 15</span><span>💬 5 respuestas</span></footer>
               </div>
             </article>
-          </div>
+          </section>
         </div>
       </div>
     </section>
 
     <!-- ========== LLAMADO A SUBIR NOTICIAS ========== -->
-    <section class="cta">
+    <aside class="cta" aria-labelledby="cta-titulo">
       <div class="contenedor cta-fila">
         <div>
-          <h2>¿Tienes una noticia sobre IA?</h2>
+          <h2 id="cta-titulo">¿Tienes una noticia sobre IA?</h2>
           <p>Compártela con la comunidad ECCI.</p>
         </div>
         <a href="#subir" class="btn btn-claro btn-grande">+ Subir mi noticia</a>
       </div>
-    </section>
+    </aside>
 
   </main>
 
@@ -312,8 +313,8 @@
   <footer class="site-footer">
     <div class="contenedor footer-fila">
       <div class="footer-logos">
-        <img src="imagenes/logo-ecci.jpg" alt="Logo ECCI" class="logo logo-ecci">
-        <img src="imagenes/logo-ucr.png" alt="Logo UCR" class="logo logo-ucr">
+        <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI" class="logo logo-ecci" width="58" height="58" loading="lazy">
+        <img src="imagenes/logo-ucr-124.png" alt="Logo UCR" class="logo logo-ucr" width="62" height="46" loading="lazy">
       </div>
       <p>ECCI.IA · Portal estudiantil de noticias sobre inteligencia artificial<br>
         Escuela de Ciencias de la Computación e Informática · Universidad de Costa Rica</p>
