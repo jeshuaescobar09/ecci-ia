@@ -24,7 +24,7 @@
   </header>
 
   <main class="contenedor admin-main">
-    <!-- Acceso -->
+
     <section class="admin-login" id="acceso">
       <h1>Moderación</h1>
       <p>Solo para el equipo de la ECCI. Escribe la clave de administración (la que está en tu archivo <code>.env</code>).</p>
@@ -36,7 +36,6 @@
       </form>
     </section>
 
-    <!-- Panel -->
     <section id="panel" hidden>
       <div class="admin-cabecera">
         <h1>Panel de moderación</h1>
@@ -157,7 +156,6 @@
     function mostrarAcceso() { $("panel").hidden = true; $("acceso").hidden = false; }
     function mostrarPanel() { $("acceso").hidden = true; $("panel").hidden = false; }
 
-    /* ---------- Resumen ---------- */
     function pintarResumen(r) {
       var cont = $("resumen");
       cont.textContent = "";
@@ -180,7 +178,6 @@
       });
     }
 
-    /* ---------- Lista ---------- */
     function accion(texto, clase, fn) {
       var b = crear("button", "btn " + clase, texto);
       b.type = "button";
@@ -295,7 +292,7 @@
       guardarClave(v);
       $("clave").value = "";
       mensaje($("msg-acceso"), "Comprobando...", "");
-      cargar().then(function () { if (!$("acceso").hidden) { /* sigue en acceso: error mostrado */ } else { mensaje($("msg-acceso"), ""); } });
+      cargar().then(function () { if (!$("acceso").hidden) { } else { mensaje($("msg-acceso"), ""); } });
     });
     $("salir").addEventListener("click", function () { guardarClave(""); mostrarAcceso(); mensaje($("msg-acceso"), ""); });
     $("tab-noticias").addEventListener("click", function () { cambiarTab("noticias"); });

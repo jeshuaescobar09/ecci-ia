@@ -37,7 +37,7 @@
 
   <section class="headline" id="inicio" aria-label="Titulares destacados">
     <div class="contenedor headline-fila">
-      
+
       <div class="cinta" aria-live="off">
         <div class="cinta-pista">
           <span>¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
@@ -55,7 +55,6 @@
 
   <main>
 
-    <!-- ========== PRINCIPAL ========== -->
     <section class="seccion" id="principal">
       <div class="contenedor">
         <header class="seccion-titulo">
@@ -63,7 +62,6 @@
           <p>Las noticias que están moviendo la ECCI</p>
         </header>
 
-        <!-- Franja con scroll horizontal: más noticias -->
         <section class="mas-noticias" aria-labelledby="mas-noticias-titulo">
           <div class="mas-noticias-cabecera">
             <h3 id="mas-noticias-titulo">Más noticias</h3>
@@ -119,7 +117,6 @@
           </div>
         </section>
 
-        <!-- 3 noticias principales -->
         <div class="grid-3">
           <article class="tarjeta">
             <div class="tarjeta-img img-a" aria-hidden="true"></div>
@@ -154,7 +151,6 @@
       </div>
     </section>
 
-    <!-- ========== ÚLTIMA NOTICIA ========== -->
     <section class="seccion seccion-oscura" id="ultima">
       <div class="contenedor">
         <header class="seccion-titulo claro">
@@ -169,7 +165,7 @@
           </figure>
 
           <div class="ultima-texto">
-           
+
             <h3>¡La IA llegó a la ECCI! Un robot, cientos de curiosos y el futuro de la computación en la UCR</h3>
             <p class="bajada">
               La Escuela de Ciencias de la Computación e Informática abrió sus puertas a la inteligencia artificial
@@ -188,7 +184,6 @@
       </div>
     </section>
 
-    <!-- ========== VIDEOS ========== -->
     <section class="seccion" id="videos">
       <div class="contenedor">
         <header class="seccion-titulo">
@@ -197,8 +192,7 @@
         </header>
 
         <div class="grid-videos">
-          <!-- Para usar un video real, reemplaza el <a class="video-marco"> por:
-               <iframe src="https://www.youtube.com/embed/ID_DEL_VIDEO" title="Título" allowfullscreen></iframe> -->
+
           <article class="video">
             <a class="video-marco v-a" href="#videos" aria-label="Reproducir video: Demostración del robot en la ECCI">
               <span class="play" aria-hidden="true"></span>
@@ -229,7 +223,6 @@
       </div>
     </section>
 
-    <!-- ========== OPINIÓN (FORO) ========== -->
     <section class="seccion seccion-suave" id="opinion">
       <div class="contenedor">
         <header class="seccion-titulo">
@@ -237,12 +230,12 @@
           <p class="debate">
             <span class="debate-etiqueta">Debate abierto</span>
             <span class="debate-tema" id="tema-debate" aria-live="off">¿La IA es aliada o amenaza para la universidad?</span>
-            
+
           </p>
         </header>
 
         <div class="foro">
-          <!-- Formulario para opinar (se conectará a la base de datos) -->
+
           <form class="foro-form" action="#" method="post">
             <h3>Deja tu opinión</h3>
             <label for="op-nombre">Nombre</label>
@@ -263,13 +256,11 @@
             <small class="aviso">Las opiniones serán revisadas antes de publicarse.</small>
           </form>
 
-          <!-- Las opiniones, sus «me gusta» y comentarios vienen de la base de datos (app.js) -->
           <section class="hilo" aria-label="Opiniones publicadas"></section>
         </div>
       </div>
     </section>
 
-    <!-- ========== LLAMADO A SUBIR NOTICIAS ========== -->
     <aside class="cta" aria-labelledby="cta-titulo">
       <div class="contenedor cta-fila">
         <div>
@@ -282,7 +273,6 @@
 
   </main>
 
-  <!-- ========== PIE ========== -->
   <footer class="site-footer">
     <div class="contenedor footer-fila">
       <div class="footer-logos">
@@ -294,7 +284,6 @@
     </div>
   </footer>
 
-  <!-- ========== VENTANA: SUBIR NOTICIA (solo CSS, usa :target) ========== -->
   <div class="modal" id="subir" role="dialog" aria-modal="true" aria-labelledby="subir-titulo">
     <a href="#principal" class="modal-fondo" aria-label="Cerrar"></a>
     <div class="modal-caja">
@@ -302,7 +291,6 @@
       <h2 id="subir-titulo">Sube tu noticia</h2>
       <p class="modal-intro">Tu noticia quedará <strong>pendiente de aprobación</strong>. Un moderador la revisará antes de publicarla en el portal.</p>
 
-      <!-- Cuando conectes la base de datos, cambia action="#" por la ruta de tu servidor -->
       <form action="#" method="post" enctype="multipart/form-data">
         <div class="campo-2">
           <div>
@@ -350,13 +338,10 @@
     </div>
   </div>
 
-
-  <!-- ========== JavaScript mínimo: flechas del scroll y tema de debate aleatorio ========== -->
   <script>
   (function () {
     "use strict";
 
-    /* ---- 1) Flechas de "Más noticias" ---- */
     var pista = document.querySelector(".scroll-noticias");
     var flechas = document.querySelectorAll(".flecha");
     if (pista && flechas.length) {
@@ -369,7 +354,6 @@
       });
     }
 
-    /* ---- 2) Nota de debate que cambia sola (como las notas de Instagram) ---- */
     var temas = [
       "¿La IA es aliada o amenaza para la universidad?",
       "¿Deberían los estudiantes poder usar IA en los exámenes?",
@@ -385,8 +369,8 @@
       "¿Es seguro compartir datos personales con los chatbots?"
     ];
 
-    var INTERVALO = 7000;      /* milisegundos que se muestra cada tema */
-    var DURACION_FADE = 500;   /* debe coincidir con la transición del CSS */
+    var INTERVALO = 7000;
+    var DURACION_FADE = 500;
     var CLAVE = "eccia_ultimo_tema";
 
     var elTema = document.getElementById("tema-debate");
@@ -398,10 +382,9 @@
       try { return localStorage.getItem(CLAVE); } catch (e) { return null; }
     }
     function guardarUltimo(t) {
-      try { localStorage.setItem(CLAVE, t); } catch (e) { /* sin almacenamiento: no pasa nada */ }
+      try { localStorage.setItem(CLAVE, t); } catch (e) { }
     }
 
-    /* Elige un tema al azar que no sea el actual ni el último que se vio */
     function elegir() {
       var actual = elTema.textContent.trim();
       var ultimo = leerUltimo();
@@ -415,7 +398,6 @@
       guardarUltimo(t);
     }
 
-    /* Se desvanece, cambia el texto y vuelve a aparecer */
     function rotar() {
       if (pausado || document.hidden) { return; }
       elTema.classList.add("saliendo");
@@ -425,10 +407,9 @@
       }, DURACION_FADE);
     }
 
-    poner(elegir());                                   /* tema inicial al cargar */
+    poner(elegir());
     setInterval(rotar, INTERVALO);
 
-    /* Pausa mientras el usuario lee o tiene el mouse encima */
     zona.addEventListener("mouseenter", function () { pausado = true; });
     zona.addEventListener("mouseleave", function () { pausado = false; });
   })();
