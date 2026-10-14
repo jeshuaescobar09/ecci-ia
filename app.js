@@ -2,18 +2,18 @@
 (function () {
   "use strict";
 
-  
+
   function direccionApi() {
     if (typeof window.ECCI_API_BASE === "string") { return window.ECCI_API_BASE; }
     var local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
     if (location.protocol === "file:" || (local && location.port !== "8000")) {
-      return "http://localhost:8000";   
+      return "http://localhost:8000";
     }
-    return "";                          
+    return "";
   }
   var API = direccionApi();
 
-  
+
   function crear(etiqueta, clase, texto) {
     var nodo = document.createElement(etiqueta);
     if (clase) { nodo.className = clase; }
@@ -21,7 +21,7 @@
     return nodo;
   }
 
-  
+
   function urlImagen(url) {
     if (typeof url !== "string") { return ""; }
     if (/^\/uploads\/[\w.-]+$/.test(url)) { return API + url; }
@@ -32,10 +32,7 @@
 
   function fondoImagen(nodo, url) {
     var u = urlImagen(url);
-    if (u) {
-      nodo.style.background = "url('" + u + "') center / cover no-repeat";
-      nodo.classList.add("con-foto");
-    }
+    if (u) { nodo.style.backgroundImage = "url('" + u + "')"; }
   }
 
   var MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -96,107 +93,82 @@
   var aviso = null;
   function mostrarAviso(texto, esError, temporal) {
     if (!aviso) {
-      aviso = crear("div", "aviso-pagina");
+      aviso = crear("div");
       aviso.setAttribute("role", "status");
-      document.body.insertBefore(aviso, document.body.firstChild);
+      aviso.style.cssText = "position:fixed;top:80px;left:16px;right:16px;z-index:5";
+      document.body.appendChild(aviso);
     }
     aviso.textContent = texto;
-    aviso.className = "aviso-pagina" + (esError ? " error" : "");
+    aviso.className = "w3-panel w3-card w3-round " + (esError ? "w3-pale-red w3-leftbar w3-border-red" : "w3-pale-yellow w3-leftbar w3-border-amber");
     aviso.hidden = false;
     if (temporal) {
       setTimeout(function () { if (aviso) { aviso.hidden = true; } }, 6000);
     }
   }
 
-  /* ---------- Ventanas (modales) ---------- */
-  function hayVentanaAbierta() {
-    return location.hash === "#subir" || location.hash === "#leer" || location.hash === "#subir-video";
+  /* ---------- Ventanas (modales de W3.CSS) ----------
+     Un botón con data-abrir="id" abre la ventana; uno con data-cerrar la cierra. */
+  function abrirVentana(id) {
+    var ventana = document.getElementById(id);
+    if (!ventana) { return; }
+    ventana.style.display = "block";
+    var cerrar = ventana.querySelector("[data-cerrar]");
+    if (cerrar) { setTimeout(function () { cerrar.focus(); }, 30); }
   }
   function cerrarVentana() {
-    // Un identificador que no existe cierra la ventana (:target) sin mover la página
-    if (hayVentanaAbierta()) { location.hash = "#cerrado"; }
+    document.querySelectorAll(".w3-modal").forEach(function (v) { v.style.display = "none"; });
   }
-  function prepararCierres() {
+  function prepararBotones() {
     document.addEventListener("click", function (e) {
-      var objetivo = e.target.closest ? e.target.closest(".modal-fondo, .modal-cerrar, .modal .btn-fantasma") : null;
-      if (objetivo) { e.preventDefault(); cerrarVentana(); }
+      var abrir = e.target.closest("[data-abrir]");
+      if (abrir) { e.preventDefault(); abrirVentana(abrir.getAttribute("data-abrir")); return; }
+      // Clic en el botón de cerrar o en el fondo oscuro de la ventana
+      if (e.target.closest("[data-cerrar]") || e.target.classList.contains("w3-modal")) { cerrarVentana(); return; }
+      // Botón ☰ del celular
+      if (e.target.closest("[data-menu]")) { document.getElementById("menu-movil").classList.toggle("w3-show"); return; }
+      if (e.target.closest("#menu-movil a")) { document.getElementById("menu-movil").classList.remove("w3-show"); }
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") { cerrarVentana(); }
     });
-    window.addEventListener("hashchange", function () {
-      if (!hayVentanaAbierta()) { return; }
-      var ventana = document.querySelector(location.hash);
-      var cerrar = ventana ? ventana.querySelector(".modal-cerrar") : null;
-      if (cerrar) { setTimeout(function () { cerrar.focus(); }, 30); }
+    // Flechas del carrusel de «Más noticias»
+    var pista = document.getElementById("mas-noticias");
+    document.querySelectorAll("[data-flecha]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var dir = Number(btn.getAttribute("data-flecha"));
+        pista.scrollBy({ left: dir * pista.clientWidth * 0.8, behavior: "smooth" });
+      });
     });
   }
 
   /* ---------- Lector de noticia completa ---------- */
-  var lector = null;
-  function prepararLector() {
-    var ventana = crear("div", "modal");
-    ventana.id = "leer";
-    ventana.setAttribute("role", "dialog");
-    ventana.setAttribute("aria-modal", "true");
-    ventana.setAttribute("aria-labelledby", "leer-titulo");
-
-    var fondo = crear("a", "modal-fondo");
-    fondo.href = "#cerrado";
-    fondo.setAttribute("aria-label", "Cerrar");
-
-    var caja = crear("article", "modal-caja lector");
-    var cerrar = crear("a", "modal-cerrar", "×");
-    cerrar.href = "#cerrado";
-    cerrar.setAttribute("aria-label", "Cerrar ventana");
-
-    lector = {
-      ventana: ventana,
-      categoria: crear("span", "etiqueta"),
-      titulo: crear("h2"),
-      meta: crear("p", "meta"),
-      imagen: document.createElement("img"),
-      texto: crear("div", "lector-texto")
-    };
-    lector.titulo.id = "leer-titulo";
-    lector.imagen.hidden = true;
-
-    caja.appendChild(cerrar);
-    caja.appendChild(lector.categoria);
-    caja.appendChild(lector.titulo);
-    caja.appendChild(lector.meta);
-    caja.appendChild(lector.imagen);
-    caja.appendChild(lector.texto);
-    ventana.appendChild(fondo);
-    ventana.appendChild(caja);
-    document.body.appendChild(ventana);
-  }
-
   function abrirLector(id) {
     pedir("/api/noticias/" + encodeURIComponent(id)).then(
       function (n) {
-        lector.categoria.textContent = n.categoria;
-        lector.titulo.textContent = n.titulo;
-        lector.meta.textContent = "Por " + n.autor + " · " + fechaCorta(n.fecha);
+        document.getElementById("leer-categoria").textContent = n.categoria;
+        document.getElementById("leer-titulo").textContent = n.titulo;
+        document.getElementById("leer-meta").textContent = "Por " + n.autor + " · " + fechaCorta(n.fecha);
+        var imagen = document.getElementById("leer-imagen");
         var url = urlImagen(n.imagen_url);
         if (url) {
-          lector.imagen.src = url;
-          lector.imagen.alt = "Imagen de la noticia: " + n.titulo;
-          lector.imagen.hidden = false;
+          imagen.src = url;
+          imagen.alt = "Imagen de la noticia: " + n.titulo;
+          imagen.hidden = false;
         } else {
-          lector.imagen.hidden = true;
-          lector.imagen.removeAttribute("src");
+          imagen.hidden = true;
+          imagen.removeAttribute("src");
         }
-        lector.texto.textContent = "";
-        parrafos(n.contenido).forEach(function (p) { lector.texto.appendChild(crear("p", null, p)); });
-        location.hash = "#leer";
+        var texto = document.getElementById("leer-texto");
+        texto.textContent = "";
+        parrafos(n.contenido).forEach(function (p) { texto.appendChild(crear("p", null, p)); });
+        abrirVentana("leer");
       },
       function (e) { mostrarAviso(e.message, true, true); }
     );
   }
 
   function enlaceALector(nodo, id) {
-    nodo.href = "#leer";
+    nodo.href = "#";
     nodo.addEventListener("click", function (e) { e.preventDefault(); abrirLector(id); });
   }
 
@@ -215,129 +187,125 @@
     return pie;
   }
 
+  function vacio(cont, texto) {
+    cont.appendChild(crear("p", "w3-text-grey w3-padding", texto));
+  }
+
   function pintarMas(lista) {
-    var pista = document.querySelector(".scroll-noticias");
+    var pista = document.getElementById("mas-noticias");
     if (!pista) { return; }
     pista.textContent = "";
-    if (!lista.length) {
-      pista.appendChild(crear("p", "vacio", "Todavía no hay noticias publicadas."));
-      return;
-    }
+    if (!lista.length) { vacio(pista, "Todavía no hay noticias publicadas."); return; }
     lista.forEach(function (n) {
-      var tarjeta = crear("a", "mini");
-      var imagen = crear("span", "mini-img");
+      var tarjeta = crear("a", "w3-card w3-white w3-round w3-hover-shadow");
+      var imagen = crear("div", "foto foto-mini");
       imagen.setAttribute("aria-hidden", "true");
       fondoImagen(imagen, n.imagen_url);
       tarjeta.appendChild(imagen);
-      tarjeta.appendChild(crear("span", "mini-cat", n.categoria));
-      tarjeta.appendChild(crear("strong", null, n.titulo));
-      var cuando = crear("small");
+      var cuerpo = crear("div", "w3-container w3-padding-small");
+      cuerpo.appendChild(crear("span", "w3-small w3-text-ucr", n.categoria));
+      cuerpo.appendChild(crear("p", "sin-margen", n.titulo)).style.fontWeight = "bold";
+      var cuando = crear("small", "w3-text-grey");
       cuando.appendChild(fecha(hace(n.fecha), n.fecha));
-      tarjeta.appendChild(cuando);
+      cuerpo.appendChild(cuando);
+      tarjeta.appendChild(cuerpo);
       enlaceALector(tarjeta, n.id);
       pista.appendChild(tarjeta);
     });
   }
 
-  var DEGRADADOS = ["img-a", "img-b", "img-c"];
   function pintarPrincipales(lista) {
-    var cont = document.querySelector(".grid-3");
+    var cont = document.getElementById("principales");
     if (!cont) { return; }
     cont.textContent = "";
-    if (!lista.length) {
-      cont.appendChild(crear("p", "vacio", "Todavía no hay noticias publicadas. ¡Sé la primera persona en subir una!"));
-      return;
-    }
-    lista.forEach(function (n, i) {
-      var tarjeta = crear("article", "tarjeta");
-      var imagen = crear("div", "tarjeta-img " + DEGRADADOS[i % DEGRADADOS.length]);
+    if (!lista.length) { vacio(cont, "Todavía no hay noticias publicadas. ¡Sé la primera persona en subir una!"); return; }
+    lista.forEach(function (n) {
+      var columna = crear("div", "w3-third w3-margin-bottom");
+      var tarjeta = crear("article", "w3-card w3-white w3-round w3-hover-shadow");
+      var imagen = crear("div", "foto");
       imagen.setAttribute("aria-hidden", "true");
       fondoImagen(imagen, n.imagen_url);
 
-      var cuerpo = crear("div", "tarjeta-cuerpo");
-      cuerpo.appendChild(crear("span", "etiqueta", n.categoria));
-      var titulo = crear("h3");
-      var enlace = crear("a", null, n.titulo);
+      var cuerpo = crear("div", "w3-container w3-padding");
+      cuerpo.appendChild(crear("span", "w3-tag w3-ucr w3-round w3-small", n.categoria));
+      var titulo = crear("h3", "w3-large");
+      var enlace = crear("a", "w3-text-black", n.titulo);
+      enlace.style.textDecoration = "none";
       enlaceALector(enlace, n.id);
       titulo.appendChild(enlace);
       cuerpo.appendChild(titulo);
       cuerpo.appendChild(crear("p", null, n.resumen));
-      cuerpo.appendChild(firma("meta", n.autor, n.fecha));
+      cuerpo.appendChild(firma("w3-small w3-text-grey", n.autor, n.fecha));
 
       tarjeta.appendChild(imagen);
       tarjeta.appendChild(cuerpo);
-      cont.appendChild(tarjeta);
+      columna.appendChild(tarjeta);
+      cont.appendChild(columna);
     });
   }
 
   function pintarUltima(n) {
-    var cont = document.querySelector(".ultima");
+    var cont = document.getElementById("ultima-noticia");
     if (!cont) { return; }
     cont.textContent = "";
-    if (!n) {
-      cont.style.gridTemplateColumns = "1fr";
-      cont.appendChild(crear("p", "vacio vacio-claro", "Todavía no hay una última noticia."));
-      return;
-    }
+    if (!n) { cont.appendChild(crear("p", "w3-padding", "Todavía no hay una última noticia.")); return; }
+
     var url = urlImagen(n.imagen_url);
     if (url) {
-      var figura = crear("figure", "ultima-foto");
-      var foto = document.createElement("img");
+      var figura = crear("figure", "w3-half sin-margen w3-margin-bottom");
+      var foto = crear("img", "foto-ultima w3-round");
       foto.src = url;
       foto.alt = "Imagen de la noticia: " + n.titulo;
       figura.appendChild(foto);
       cont.appendChild(figura);
-      cont.style.gridTemplateColumns = "";
-    } else {
-      cont.style.gridTemplateColumns = "1fr";
     }
 
-    var texto = crear("div", "ultima-texto");
-    texto.appendChild(crear("span", "etiqueta etiqueta-clara", n.categoria + " · Última hora"));
-    texto.appendChild(crear("h3", null, n.titulo));
-    texto.appendChild(crear("p", "bajada", n.resumen));
+    var texto = crear("div", url ? "w3-half" : "w3-col s12");
+    texto.appendChild(crear("span", "w3-tag w3-celeste w3-round", n.categoria + " · Última hora"));
+    texto.appendChild(crear("h3", "w3-xlarge", n.titulo));
+    texto.appendChild(crear("p", "w3-large", n.resumen));
     var primero = parrafos(n.contenido)[0];
-    if (primero) { texto.appendChild(crear("p", null, primero)); }
-    texto.appendChild(firma("meta meta-clara", n.autor, n.fecha));
-    var boton = crear("a", "btn btn-claro", "Leer noticia completa");
+    if (primero) { texto.appendChild(crear("p", "w3-text-light-grey", primero)); }
+    texto.appendChild(firma("w3-small w3-text-light-grey w3-margin-bottom", n.autor, n.fecha));
+    var boton = crear("a", "w3-button w3-white w3-text-ucr w3-round", "Leer noticia completa");
     enlaceALector(boton, n.id);
     texto.appendChild(boton);
     cont.appendChild(texto);
   }
 
+  var COLORES_AVATAR = ["w3-ucr", "w3-celeste", "w3-marino"];
+
   function pintarOpiniones(lista) {
-    var hilo = document.querySelector(".hilo");
+    var hilo = document.getElementById("hilo");
     if (!hilo) { return; }
     hilo.textContent = "";
-    if (!lista.length) {
-      hilo.appendChild(crear("p", "vacio", "Todavía no hay opiniones. ¡Sé la primera persona en opinar!"));
-      return;
-    }
+    if (!lista.length) { vacio(hilo, "Todavía no hay opiniones. ¡Sé la primera persona en opinar!"); return; }
     lista.forEach(function (o, i) {
-      var articulo = crear("article", "comentario");
-      var clase = "avatar" + (i % 3 === 1 ? " av2" : (i % 3 === 2 ? " av3" : ""));
-      var avatar = crear("div", clase, Array.from(o.nombre || "?")[0].toUpperCase());
+      var articulo = crear("article", "w3-card w3-round w3-white w3-padding w3-margin-bottom");
+      var cabecera = crear("header", "w3-bar");
+      var avatar = crear("span", "w3-bar-item w3-circle w3-center " + COLORES_AVATAR[i % 3], Array.from(o.nombre || "?")[0].toUpperCase());
+      avatar.style.cssText = "width:40px;height:40px;padding:8px 0;margin-right:8px";
       avatar.setAttribute("aria-hidden", "true");
-      articulo.appendChild(avatar);
-
-      var cuerpo = crear("div", "comentario-cuerpo");
-      var cabecera = document.createElement("header");
-      cabecera.appendChild(crear("strong", null, o.nombre));
-      cabecera.appendChild(document.createTextNode(" "));
-      cabecera.appendChild(crear("span", "tema", o.tema));
-      var hora = crear("time", null, hace(o.fecha));
+      cabecera.appendChild(avatar);
+      var quien = crear("div", "w3-bar-item w3-padding-small");
+      quien.appendChild(crear("strong", null, o.nombre));
+      quien.appendChild(document.createTextNode(" "));
+      quien.appendChild(crear("span", "w3-tag w3-light-grey w3-round w3-small", o.tema));
+      quien.appendChild(crear("br"));
+      var hora = crear("time", "w3-small w3-text-grey", hace(o.fecha));
       hora.setAttribute("datetime", o.fecha);
-      cabecera.appendChild(hora);
-      cuerpo.appendChild(cabecera);
-      cuerpo.appendChild(crear("p", null, o.texto));
+      quien.appendChild(hora);
+      cabecera.appendChild(quien);
+      articulo.appendChild(cabecera);
+      articulo.appendChild(crear("p", null, o.texto));
 
       var respuestas = zonaDeComentarios(o);
-      var acciones = crear("footer", "acciones");
+      var acciones = crear("footer");
       acciones.appendChild(botonMeGusta(o));
+      acciones.appendChild(document.createTextNode(" "));
       acciones.appendChild(botonComentarios(respuestas, (o.comentarios || []).length));
-      cuerpo.appendChild(acciones);
-      cuerpo.appendChild(respuestas);
-      articulo.appendChild(cuerpo);
+      articulo.appendChild(acciones);
+      articulo.appendChild(respuestas);
       hilo.appendChild(articulo);
     });
   }
@@ -361,11 +329,11 @@
     boton.textContent = "👍 " + likes;
     boton.setAttribute("aria-pressed", meGusta ? "true" : "false");
     boton.setAttribute("aria-label", (meGusta ? "Quitar me gusta" : "Me gusta") + " (" + likes + ")");
-    boton.classList.toggle("activo", meGusta);
+    boton.className = "w3-button w3-round w3-small " + (meGusta ? "w3-ucr" : "w3-light-grey");
   }
 
   function botonMeGusta(o) {
-    var boton = crear("button", "btn-accion");
+    var boton = crear("button");
     boton.type = "button";
     var meGusta = !!o.me_gusta;
     pintarMeGusta(boton, o.likes || 0, meGusta);
@@ -389,7 +357,7 @@
   }
 
   function botonComentarios(zona, n) {
-    var boton = crear("button", "btn-accion", textoComentarios(n));
+    var boton = crear("button", "w3-button w3-light-grey w3-round w3-small", textoComentarios(n));
     boton.type = "button";
     boton.setAttribute("aria-expanded", "false");
     boton.addEventListener("click", function () {
@@ -400,27 +368,28 @@
   }
 
   function zonaDeComentarios(o) {
-    var zona = crear("div", "respuestas");
+    var zona = crear("div", "w3-margin-top");
     zona.hidden = true;
 
     (o.comentarios || []).forEach(function (c) {
-      var item = crear("div", "respuesta");
-      var cabecera = document.createElement("header");
+      var item = crear("div", "w3-panel w3-light-grey w3-leftbar w3-border-ucr w3-round");
+      var cabecera = crear("p", "sin-margen w3-padding-small");
       cabecera.appendChild(crear("strong", null, c.nombre));
-      var hora = crear("time", null, hace(c.fecha));
+      cabecera.appendChild(document.createTextNode(" "));
+      var hora = crear("time", "w3-small w3-text-grey", hace(c.fecha));
       hora.setAttribute("datetime", c.fecha);
       cabecera.appendChild(hora);
       item.appendChild(cabecera);
-      item.appendChild(crear("p", null, c.texto));
+      item.appendChild(crear("p", "sin-margen w3-padding-small", c.texto));
       zona.appendChild(item);
     });
 
-    var formulario = crear("form", "form-comentario");
+    var formulario = crear("form", "w3-container w3-padding-small");
     var idNombre = "c-nombre-" + o.id;
     var idTexto = "c-texto-" + o.id;
     var etiquetaNombre = crear("label", null, "Nombre");
     etiquetaNombre.htmlFor = idNombre;
-    var nombre = document.createElement("input");
+    var nombre = crear("input", "w3-input w3-border w3-round w3-margin-bottom");
     nombre.type = "text";
     nombre.id = idNombre;
     nombre.name = "nombre";
@@ -428,13 +397,13 @@
     nombre.required = true;
     var etiquetaTexto = crear("label", null, "Tu comentario");
     etiquetaTexto.htmlFor = idTexto;
-    var texto = document.createElement("textarea");
+    var texto = crear("textarea", "w3-input w3-border w3-round w3-margin-bottom");
     texto.id = idTexto;
     texto.name = "comentario";
     texto.rows = 2;
     texto.maxLength = 500;
     texto.required = true;
-    var boton = crear("button", "btn btn-primario", "Comentar");
+    var boton = crear("button", "w3-button w3-ucr w3-round", "Comentar");
     boton.type = "submit";
 
     formulario.appendChild(etiquetaNombre);
@@ -465,7 +434,7 @@
 
   function reproducir(marco, v) {
     // El reproductor solo se carga al hacer clic: la página abre más rápido
-    var iframe = document.createElement("iframe");
+    var iframe = crear("iframe", "video-marco");
     iframe.src = "https://www.youtube-nocookie.com/embed/" + v.youtube_id + "?autoplay=1&rel=0";
     iframe.title = v.titulo;
     iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
@@ -475,134 +444,59 @@
   }
 
   function pintarVideos(lista) {
-    var cont = document.querySelector(".grid-videos");
+    var cont = document.getElementById("lista-videos");
     if (!cont) { return; }
     cont.textContent = "";
     lista = lista.filter(function (v) { return ID_YOUTUBE.test(v.youtube_id); });
-    if (!lista.length) {
-      cont.appendChild(crear("p", "vacio", "Todavía no hay videos publicados. ¡Comparte el primero!"));
-      return;
-    }
+    if (!lista.length) { vacio(cont, "Todavía no hay videos publicados. ¡Comparte el primero!"); return; }
     lista.forEach(function (v) {
-      var articulo = crear("article", "video");
-      var marco = crear("button", "video-marco con-miniatura");
+      var columna = crear("div", "w3-third w3-margin-bottom");
+      var articulo = crear("article", "w3-card w3-white w3-round w3-hover-shadow");
+      var marco = crear("button", "video-marco w3-display-container");
       marco.type = "button";
       marco.setAttribute("aria-label", "Reproducir video: " + v.titulo);
       marco.style.backgroundImage = "url('https://i.ytimg.com/vi/" + v.youtube_id + "/hqdefault.jpg')";
-      var play = crear("span", "play");
+      var play = crear("span", "w3-display-middle w3-text-white", "▶");
       play.setAttribute("aria-hidden", "true");
       marco.appendChild(play);
       marco.addEventListener("click", function () { reproducir(marco, v); });
 
+      var cuerpo = crear("div", "w3-container w3-padding");
+      cuerpo.appendChild(crear("h3", "w3-large sin-margen", v.titulo));
+      if (v.descripcion) { cuerpo.appendChild(crear("p", null, v.descripcion)); }
+      cuerpo.appendChild(crear("p", "w3-small w3-text-grey", v.categoria + " · " + fechaCorta(v.fecha) + " · Por " + v.autor));
+
       articulo.appendChild(marco);
-      articulo.appendChild(crear("h3", null, v.titulo));
-      if (v.descripcion) { articulo.appendChild(crear("p", "video-desc", v.descripcion)); }
-      articulo.appendChild(crear("p", "meta", v.categoria + " · " + fechaCorta(v.fecha) + " · Por " + v.autor));
-      cont.appendChild(articulo);
-    });
-  }
-
-  // Ventana para compartir un video. Es una plantilla fija (no lleva texto de la gente),
-  // por eso aquí sí se puede usar innerHTML. Las categorías deben coincidir con config.py.
-  var PLANTILLA_VIDEO =
-    '<a href="#cerrado" class="modal-fondo" aria-label="Cerrar"></a>' +
-    '<div class="modal-caja">' +
-    '  <a href="#cerrado" class="modal-cerrar" aria-label="Cerrar ventana">×</a>' +
-    '  <h2 id="subir-video-titulo">Comparte un video</h2>' +
-    '  <p class="modal-intro">Sube tu video a <strong>YouTube</strong> (puede ser «No listado») y pega aquí el enlace. ' +
-    '  Quedará <strong>pendiente de aprobación</strong> hasta que un moderador lo revise.</p>' +
-    '  <form action="#" method="post">' +
-    '    <div class="campo-2">' +
-    '      <div><label for="v-autor">Nombre del autor</label><input id="v-autor" name="autor" type="text" maxlength="80" required></div>' +
-    '      <div><label for="v-correo">Correo institucional</label><input id="v-correo" name="correo" type="email" placeholder="nombre@ucr.ac.cr" required></div>' +
-    '    </div>' +
-    '    <label for="v-enlace">Enlace de YouTube</label>' +
-    '    <input id="v-enlace" name="enlace" type="url" placeholder="https://youtu.be/..." required>' +
-    '    <label for="v-titulo">Título del video</label>' +
-    '    <input id="v-titulo" name="titulo" type="text" maxlength="120" required>' +
-    '    <label for="v-cat">Categoría</label>' +
-    '    <select id="v-cat" name="categoria">' +
-    '      <option>Charla</option><option>Demostración</option><option>Proyecto estudiantil</option>' +
-    '      <option>Evento</option><option>Tutorial</option>' +
-    '    </select>' +
-    '    <label for="v-desc">Descripción (opcional, máx. 300 caracteres)</label>' +
-    '    <textarea id="v-desc" name="descripcion" rows="2" maxlength="300"></textarea>' +
-    '    <label class="check"><input type="checkbox" name="acepta" required> ' +
-    '      Confirmo que tengo permiso para compartir este video y acepto que sea revisado antes de publicarse.</label>' +
-    '    <div class="modal-botones">' +
-    '      <a href="#cerrado" class="btn btn-fantasma">Cancelar</a>' +
-    '      <button type="submit" class="btn btn-primario">Enviar para revisión</button>' +
-    '    </div>' +
-    '  </form>' +
-    '</div>';
-
-  function prepararFormularioVideo() {
-    var seccion = document.querySelector("#videos .contenedor");
-    if (!seccion) { return; }
-
-    var pie = crear("div", "videos-pie");
-    var abrir = crear("a", "btn btn-primario", "+ Compartir un video");
-    abrir.href = "#subir-video";
-    pie.appendChild(abrir);
-    seccion.appendChild(pie);
-
-    var ventana = crear("div", "modal");
-    ventana.id = "subir-video";
-    ventana.setAttribute("role", "dialog");
-    ventana.setAttribute("aria-modal", "true");
-    ventana.setAttribute("aria-labelledby", "subir-video-titulo");
-    ventana.innerHTML = PLANTILLA_VIDEO;
-    document.body.appendChild(ventana);
-
-    var formulario = ventana.querySelector("form");
-    insertarTrampa(formulario);
-    var zona = zonaDeMensaje(formulario, formulario.querySelector(".modal-botones"));
-
-    formulario.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var el = formulario.elements;
-      var datos = {
-        autor: el.autor.value,
-        correo: el.correo.value,
-        enlace: el.enlace.value,
-        titulo: el.titulo.value,
-        categoria: el.categoria.value,
-        descripcion: el.descripcion.value,
-        acepta: el.acepta.checked ? "on" : "",
-        sitio_web: el.sitio_web ? el.sitio_web.value : ""
-      };
-      enviar(formulario, zona, "/api/videos", comoJson(datos), function () {
-        formulario.reset();
-        cerrarLuego("#subir-video");
-      });
+      articulo.appendChild(cuerpo);
+      columna.appendChild(articulo);
+      cont.appendChild(columna);
     });
   }
 
   /* ---------- Formularios ---------- */
+  // Campo escondido: las personas no lo ven, los robots de spam sí lo llenan
   function insertarTrampa(formulario) {
     var campo = document.createElement("input");
     campo.type = "text";
     campo.name = "sitio_web";
     campo.tabIndex = -1;
     campo.autocomplete = "off";
-    campo.className = "trampa";
+    campo.className = "w3-hide";
     campo.setAttribute("aria-hidden", "true");
     formulario.appendChild(campo);
   }
 
   function zonaDeMensaje(formulario, antesDe) {
-    var m = formulario.querySelector(".mensaje");
-    if (!m) {
-      m = crear("p", "mensaje");
-      m.setAttribute("role", "status");
-      m.setAttribute("aria-live", "polite");
-      antesDe.parentNode.insertBefore(m, antesDe);
-    }
+    var m = crear("p", "mensaje");
+    m.setAttribute("role", "status");
+    m.setAttribute("aria-live", "polite");
+    antesDe.parentNode.insertBefore(m, antesDe);
     return m;
   }
   function escribirMensaje(zona, texto, tipo) {
     zona.textContent = texto;
-    zona.className = "mensaje " + tipo;
+    var color = tipo === "ok" ? " w3-panel w3-pale-green w3-padding" : (tipo === "error" ? " w3-panel w3-pale-red w3-padding" : "");
+    zona.className = "mensaje w3-round" + color;
   }
 
   function comoJson(datos) {
@@ -614,8 +508,8 @@
   }
 
   // Cierra la ventana unos segundos después, si la persona no la cerró antes
-  function cerrarLuego(hash) {
-    setTimeout(function () { if (location.hash === hash) { cerrarVentana(); } }, 4500);
+  function cerrarLuego() {
+    setTimeout(cerrarVentana, 4500);
   }
 
   // Envía un formulario: bloquea el botón mientras espera y muestra la respuesta
@@ -642,7 +536,7 @@
     var formulario = document.querySelector("#subir form");
     if (!formulario) { return; }
     insertarTrampa(formulario);
-    var zona = zonaDeMensaje(formulario, formulario.querySelector(".modal-botones"));
+    var zona = zonaDeMensaje(formulario, formulario.querySelector(".botones"));
 
     formulario.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -653,17 +547,42 @@
       }
       enviar(formulario, zona, "/api/noticias", { method: "POST", body: new FormData(formulario) }, function () {
         formulario.reset();
-        cerrarLuego("#subir");
+        cerrarLuego();
+      });
+    });
+  }
+
+  function prepararFormularioVideo() {
+    var formulario = document.querySelector("#subir-video form");
+    if (!formulario) { return; }
+    insertarTrampa(formulario);
+    var zona = zonaDeMensaje(formulario, formulario.querySelector(".botones"));
+
+    formulario.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var el = formulario.elements;
+      var datos = {
+        autor: el.autor.value,
+        correo: el.correo.value,
+        enlace: el.enlace.value,
+        titulo: el.titulo.value,
+        categoria: el.categoria.value,
+        descripcion: el.descripcion.value,
+        acepta: el.acepta.checked ? "on" : "",
+        sitio_web: el.sitio_web ? el.sitio_web.value : ""
+      };
+      enviar(formulario, zona, "/api/videos", comoJson(datos), function () {
+        formulario.reset();
+        cerrarLuego();
       });
     });
   }
 
   function prepararFormularioOpinion() {
-    var formulario = document.querySelector(".foro-form");
+    var formulario = document.getElementById("form-opinion");
     if (!formulario) { return; }
     insertarTrampa(formulario);
-    var nota = formulario.querySelector(".aviso");
-    var zona = zonaDeMensaje(formulario, nota || formulario.lastChild);
+    var zona = zonaDeMensaje(formulario, formulario.querySelector(".aviso"));
 
     formulario.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -699,22 +618,19 @@
         var sinRed = fallos.some(function (f) { return f.reason && f.reason.red; });
         mostrarAviso(
           sinRed
-            ? "Mostrando contenido de ejemplo: no hay conexión con el servidor."
-            : "Mostrando contenido de ejemplo: el servidor respondió con un error. " + fallos[0].reason.message,
-          false,
+            ? "No hay conexión con el servidor. Revisa que esté encendido (python main.py)."
+            : "El servidor respondió con un error. " + fallos[0].reason.message,
+          true,
           false
         );
         return;
       }
-      var nota = document.querySelector(".nota-dev");
-      if (nota) { nota.hidden = true; }
       if (fallos.length) { mostrarAviso("Parte del contenido no se pudo cargar. " + fallos[0].reason.message, true, true); }
     });
   }
 
   function iniciar() {
-    prepararLector();
-    prepararCierres();
+    prepararBotones();
     prepararFormularioNoticia();
     prepararFormularioOpinion();
     prepararFormularioVideo();

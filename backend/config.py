@@ -10,7 +10,7 @@ from urllib.parse import unquote, urlsplit
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
-FRONTEND_DIR = BASE_DIR.parent  # carpeta con index.html, styles.css, app.js, imagenes/
+FRONTEND_DIR = BASE_DIR.parent  # carpeta con index.html, w3.css, ecci.css, app.js, imagenes/
 
 # Las variables que ya existan en el sistema tienen prioridad sobre el archivo .env
 load_dotenv(BASE_DIR / ".env")

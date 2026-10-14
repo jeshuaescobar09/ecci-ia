@@ -10,3 +10,5 @@ __pycache__/
 # Imágenes que suben los usuarios (se guardan en el servidor, no en GitHub)
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+backend/respaldo_ocultos.json

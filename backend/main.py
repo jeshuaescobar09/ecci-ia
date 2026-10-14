@@ -559,8 +559,7 @@ def admin_eliminar(tipo, item_id):
 
 
 ARCHIVOS_PUBLICOS = {
-    "index.html", "admin.html", "styles.css", "extra.css", "app.js",
-    "tema-diario.css", "animaciones.css", "animaciones.js",
+    "index.html", "admin.html", "w3.css", "ecci.css", "app.js", "animaciones.js",
 }
 
 

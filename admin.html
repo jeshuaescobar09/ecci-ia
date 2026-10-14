@@ -5,65 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>Panel de moderación | ECCI.IA</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="extra.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="w3.css">
+  <link rel="stylesheet" href="ecci.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="contenedor header-fila">
-      <a class="marca" href="index.html" aria-label="Volver al portal ECCI.IA">
-        <span class="marca-texto">
-          <strong>ECCI<span>.IA</span></strong>
-          <small>Panel de moderación</small>
-        </span>
-      </a>
-      <nav class="nav" aria-label="Navegación">
-        <a href="index.html" id="ir-portal">Ver portal</a>
-      </nav>
-    </div>
+  <header class="w3-bar w3-ucr w3-card">
+    <a class="w3-bar-item w3-button w3-padding-16" href="index.html" aria-label="Volver al portal ECCI.IA">
+      <b>ECCI<span class="w3-text-celeste">.IA</span></b> · Panel de moderación
+    </a>
+    <a href="index.html" id="ir-portal" class="w3-bar-item w3-button w3-right w3-padding-16">Ver portal</a>
   </header>
 
-  <main class="contenedor admin-main">
+  <main class="w3-container w3-padding-32 ancho">
 
-    <section class="admin-login" id="acceso">
-      <h1>Moderación</h1>
+    <section id="acceso" class="w3-card w3-white w3-round w3-padding-large" style="max-width:480px;margin:0 auto">
+      <h1 class="w3-text-ucr">Moderación</h1>
       <p>Solo para el equipo de la ECCI. Escribe la clave de administración (la que está en tu archivo <code>.env</code>).</p>
       <form id="form-acceso" autocomplete="off">
         <label for="clave">Clave de administración</label>
-        <input type="password" id="clave" required minlength="1" autocomplete="off">
-        <button class="btn btn-primario" type="submit">Entrar</button>
+        <input type="password" id="clave" class="w3-input w3-border w3-round w3-margin-bottom" required minlength="1" autocomplete="off">
+        <button class="w3-button w3-ucr w3-round w3-block" type="submit">Entrar</button>
         <p class="mensaje" id="msg-acceso" role="alert"></p>
       </form>
     </section>
 
     <section id="panel" hidden>
-      <div class="admin-cabecera">
-        <h1>Panel de moderación</h1>
-        <button class="btn btn-fantasma" id="salir" type="button">Cerrar sesión</button>
+      <div class="w3-bar">
+        <h1 class="w3-bar-item w3-padding-small w3-text-ucr sin-margen">Panel de moderación</h1>
+        <button class="w3-bar-item w3-button w3-light-grey w3-round w3-right" id="salir" type="button">Cerrar sesión</button>
       </div>
 
-      <div class="admin-resumen" id="resumen"></div>
+      <!-- Contadores: los llena el script -->
+      <div class="w3-row-padding w3-section" id="resumen" style="margin:0 -16px"></div>
 
-      <div class="admin-tabs" role="tablist">
-        <button type="button" id="tab-noticias" class="activa" role="tab">Noticias</button>
-        <button type="button" id="tab-opiniones" role="tab">Opiniones</button>
-        <button type="button" id="tab-videos" role="tab">Videos</button>
-        <button type="button" id="tab-comentarios" role="tab">Comentarios</button>
+      <div class="w3-bar w3-white w3-card w3-round" role="tablist">
+        <button type="button" id="tab-noticias" class="w3-bar-item w3-button w3-ucr" role="tab">Noticias</button>
+        <button type="button" id="tab-opiniones" class="w3-bar-item w3-button" role="tab">Opiniones</button>
+        <button type="button" id="tab-videos" class="w3-bar-item w3-button" role="tab">Videos</button>
+        <button type="button" id="tab-comentarios" class="w3-bar-item w3-button" role="tab">Comentarios</button>
       </div>
 
-      <div class="admin-filtros">
+      <div class="w3-section">
         <label for="filtro">Mostrar</label>
-        <select id="filtro">
+        <select id="filtro" class="w3-select w3-border w3-round" style="width:auto">
           <option value="pendiente">Pendientes</option>
           <option value="aprobada">Aprobadas</option>
           <option value="rechazada">Rechazadas</option>
           <option value="todas">Todas</option>
         </select>
-        <button class="btn btn-fantasma" id="recargar" type="button">Actualizar</button>
+        <button class="w3-button w3-light-grey w3-round" id="recargar" type="button">Actualizar</button>
       </div>
 
       <p class="mensaje" id="msg-panel" role="alert"></p>
-      <div class="admin-lista" id="lista"></div>
+      <div id="lista"></div>
     </section>
   </main>
 
@@ -98,7 +93,8 @@
 
     function mensaje(nodo, texto, clase) {
       nodo.textContent = texto || "";
-      nodo.className = "mensaje" + (clase ? " " + clase : "");
+      var color = clase === "error" ? " w3-panel w3-pale-red w3-padding" : (clase === "ok" ? " w3-panel w3-pale-green w3-padding" : "");
+      nodo.className = "mensaje w3-round" + color;
     }
 
     function fecha(iso) {
@@ -171,15 +167,17 @@
       ];
       partes.forEach(function (p) {
         var n = p[1] || 0;
-        var c = crear("div", "contador" + (p[2] && n > 0 ? " alerta" : ""));
-        c.appendChild(crear("strong", "", String(n)));
+        var col = crear("div", "w3-quarter w3-margin-bottom");
+        var c = crear("div", "w3-card w3-round w3-padding w3-center " + (p[2] && n > 0 ? "w3-amber" : "w3-white"));
+        c.appendChild(crear("div", "w3-xxlarge", String(n)));
         c.appendChild(crear("span", "", p[0]));
-        cont.appendChild(c);
+        col.appendChild(c);
+        cont.appendChild(col);
       });
     }
 
     function accion(texto, clase, fn) {
-      var b = crear("button", "btn " + clase, texto);
+      var b = crear("button", "w3-button w3-round w3-margin-right " + clase, texto);
       b.type = "button";
       b.addEventListener("click", function () { b.disabled = true; fn().then(null, function () {}).then(function () { b.disabled = false; }); });
       return b;
@@ -190,21 +188,24 @@
       return pedir(metodo, ruta, cuerpo).then(cargar, errorPanel);
     }
 
+    var COLOR_ESTADO = { pendiente: "w3-amber", aprobada: "w3-green", rechazada: "w3-red" };
+
     function tarjeta(d) {
-      var it = crear("article", "admin-item");
-      var et = crear("div", "admin-etiquetas");
-      et.appendChild(crear("span", "estado " + d.estado, d.estado));
-      if (tipo !== "opiniones" && d.categoria) { et.appendChild(crear("span", "meta", d.categoria)); }
-      if (tipo === "opiniones" && d.tema) { et.appendChild(crear("span", "meta", d.tema)); }
+      var it = crear("article", "w3-card w3-white w3-round w3-padding w3-margin-bottom");
+      var et = crear("div");
+      et.appendChild(crear("span", "w3-tag w3-round " + (COLOR_ESTADO[d.estado] || "w3-grey"), d.estado));
+      et.appendChild(document.createTextNode(" "));
+      if (tipo !== "opiniones" && d.categoria) { et.appendChild(crear("span", "w3-tag w3-light-grey w3-round", d.categoria)); }
+      if (tipo === "opiniones" && d.tema) { et.appendChild(crear("span", "w3-tag w3-light-grey w3-round", d.tema)); }
       it.appendChild(et);
 
       if (tipo === "noticias") {
         it.appendChild(crear("h3", "", d.titulo));
         var meta = "Por " + d.autor + (d.correo ? " · " + d.correo : "") + " · " + fecha(d.fecha_creacion);
-        it.appendChild(crear("p", "meta", meta));
+        it.appendChild(crear("p", "w3-small w3-text-grey", meta));
         it.appendChild(crear("p", "", d.resumen));
         var img = urlImagen(d.imagen_url);
-        if (img) { var i = crear("img"); i.src = img; i.alt = "Imagen enviada con la noticia"; i.loading = "lazy"; it.appendChild(i); }
+        if (img) { var i = crear("img", "w3-image w3-round"); i.style.maxHeight = "220px"; i.src = img; i.alt = "Imagen enviada con la noticia"; i.loading = "lazy"; it.appendChild(i); }
         var det = crear("details");
         det.appendChild(crear("summary", "", "Leer contenido completo"));
         var div = crear("div");
@@ -213,48 +214,49 @@
         it.appendChild(det);
       } else if (tipo === "videos") {
         it.appendChild(crear("h3", "", d.titulo));
-        it.appendChild(crear("p", "meta", "Por " + d.autor + (d.correo ? " · " + d.correo : "") + " · " + fecha(d.fecha_creacion)));
+        it.appendChild(crear("p", "w3-small w3-text-grey", "Por " + d.autor + (d.correo ? " · " + d.correo : "") + " · " + fecha(d.fecha_creacion)));
         if (d.descripcion) { it.appendChild(crear("p", "", d.descripcion)); }
         if (/^[A-Za-z0-9_-]{11}$/.test(d.youtube_id || "")) {
-          var mini = crear("img");
+          var mini = crear("img", "w3-image w3-round");
           mini.src = "https://i.ytimg.com/vi/" + d.youtube_id + "/hqdefault.jpg";
           mini.alt = "Miniatura del video";
           mini.loading = "lazy";
           it.appendChild(mini);
-          var ver = crear("a", "enlace-video", "Ver el video en YouTube ↗");
+          it.appendChild(crear("br"));
+          var ver = crear("a", "w3-text-ucr", "Ver el video en YouTube ↗");
           ver.href = "https://www.youtube.com/watch?v=" + d.youtube_id;
           ver.target = "_blank";
           ver.rel = "noopener noreferrer";
           it.appendChild(ver);
         }
       } else if (tipo === "comentarios") {
-        it.appendChild(crear("p", "meta", d.nombre + " · " + fecha(d.fecha_creacion)));
+        it.appendChild(crear("p", "w3-small w3-text-grey", d.nombre + " · " + fecha(d.fecha_creacion)));
         it.appendChild(crear("p", "", d.texto));
         var origen = d.opinion ? "Responde a " + d.opinion.nombre + ": «" + d.opinion.texto + "»" : "La opinión original ya no existe.";
-        it.appendChild(crear("p", "meta", origen));
+        it.appendChild(crear("p", "w3-small w3-text-grey", origen));
       } else {
         var pie = d.nombre + " · " + fecha(d.fecha_creacion) + (d.likes ? " · 👍 " + d.likes : "");
-        it.appendChild(crear("p", "meta", pie));
+        it.appendChild(crear("p", "w3-small w3-text-grey", pie));
         it.appendChild(crear("p", "", d.texto));
       }
 
       if (d.estado === "rechazada" && d.motivo_rechazo) {
-        it.appendChild(crear("p", "motivo", "Motivo: " + d.motivo_rechazo));
+        it.appendChild(crear("p", "w3-text-red", "Motivo: " + d.motivo_rechazo));
       }
 
       var base = "/api/admin/" + tipo + "/" + encodeURIComponent(d.id);
-      var ac = crear("div", "admin-acciones");
+      var ac = crear("div", "w3-padding-16");
       if (d.estado !== "aprobada") {
-        ac.appendChild(accion("Aprobar", "btn-ok", function () { return ejecutar("POST", base + "/aprobar"); }));
+        ac.appendChild(accion("Aprobar", "w3-green", function () { return ejecutar("POST", base + "/aprobar"); }));
       }
       if (d.estado !== "rechazada") {
-        ac.appendChild(accion("Rechazar", "btn-no", function () {
+        ac.appendChild(accion("Rechazar", "w3-orange", function () {
           var motivo = window.prompt("Motivo del rechazo (opcional, máx. 300 caracteres):", "");
           if (motivo === null) { return Promise.resolve(); }
           return ejecutar("POST", base + "/rechazar", { motivo: motivo.slice(0, 300) });
         }));
       }
-      ac.appendChild(accion("Eliminar", "btn-borrar", function () {
+      ac.appendChild(accion("Eliminar", "w3-red", function () {
         if (!window.confirm("¿Eliminar definitivamente? No se puede deshacer.")) { return Promise.resolve(); }
         return ejecutar("DELETE", base);
       }));
@@ -271,17 +273,16 @@
         var items = Array.isArray(res[1]) ? res[1] : (res[1].items || []);
         var lista = $("lista");
         lista.textContent = "";
-        if (!items.length) { lista.appendChild(crear("p", "vacio", "No hay elementos con este filtro.")); }
+        if (!items.length) { lista.appendChild(crear("p", "w3-text-grey", "No hay elementos con este filtro.")); }
         items.forEach(function (d) { lista.appendChild(tarjeta(d)); });
       }, errorPanel);
     }
 
     function cambiarTab(nuevo) {
       tipo = nuevo;
-      $("tab-noticias").className = nuevo === "noticias" ? "activa" : "";
-      $("tab-opiniones").className = nuevo === "opiniones" ? "activa" : "";
-      $("tab-videos").className = nuevo === "videos" ? "activa" : "";
-      $("tab-comentarios").className = nuevo === "comentarios" ? "activa" : "";
+      ["noticias", "opiniones", "videos", "comentarios"].forEach(function (t) {
+        $("tab-" + t).classList.toggle("w3-ucr", t === nuevo);
+      });
       cargar();
     }
 

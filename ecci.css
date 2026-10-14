@@ -1,0 +1,79 @@
+/* =========================================================
+   ECCI.IA: estilos propios encima de W3.CSS (w3.css)
+   Casi todo el diseño se hace con clases w3-... en el HTML.
+   Aquí solo van los colores de la UCR y lo que W3.CSS no trae.
+   ========================================================= */
+
+/* ---------- Letras ---------- */
+body { font-family: "Roboto", "Segoe UI", Arial, sans-serif; background: #f3f4f6; }
+h1, h2, h3, h4 { font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif; font-weight: 700; }
+
+/* ---------- Colores oficiales UCR (manual de identidad visual 2019, pág. 28) ----------
+   Se usan igual que los colores de W3: class="w3-ucr", "w3-text-ucr", etc. */
+.w3-ucr, .w3-hover-ucr:hover { color: #fff !important; background-color: #005da4 !important; }
+.w3-celeste, .w3-hover-celeste:hover { color: #0a2a4a !important; background-color: #00c0f3 !important; }
+.w3-marino, .w3-hover-marino:hover { color: #fff !important; background-color: #0a2a4a !important; }
+.w3-text-ucr { color: #005da4 !important; }
+.w3-text-celeste { color: #00c0f3 !important; }
+.w3-border-ucr { border-color: #005da4 !important; }
+
+/* Ancho máximo del contenido */
+.ancho { max-width: 1200px; margin: 0 auto; }
+
+/* ---------- Cinta de titulares que se mueve ---------- */
+.cinta { overflow: hidden; white-space: nowrap; }
+.cinta-pista { display: inline-block; animation: cinta 45s linear infinite; }
+.cinta-pista span { margin-right: 60px; }
+.cinta:hover .cinta-pista { animation-play-state: paused; }
+@keyframes cinta { to { transform: translateX(-50%); } }
+
+/* ---------- Carrusel horizontal de «Más noticias» ---------- */
+.carrusel { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 12px; }
+.carrusel > * { flex: 0 0 230px; scroll-snap-align: start; text-decoration: none; }
+
+/* ---------- Fotos de las noticias (app.js pone la imagen de fondo) ---------- */
+.foto { height: 190px; background: linear-gradient(135deg, #005da4, #00c0f3) center / cover no-repeat; }
+.foto-mini { height: 120px; }
+.foto-ultima { width: 100%; max-height: 420px; object-fit: cover; }
+
+/* ---------- Videos 16:9 ---------- */
+.video-marco { width: 100%; aspect-ratio: 16 / 9; border: 0; padding: 0; cursor: pointer;
+  background: #000 center / cover no-repeat; display: block; }
+.video-marco .w3-display-middle { font-size: 40px; opacity: .9; }
+
+/* ---------- Tema del debate (cambia solo cada 7 s) ---------- */
+#tema-debate { transition: opacity .5s; }
+#tema-debate.saliendo { opacity: 0; }
+
+/* ---------- Avisos de formularios ---------- */
+.mensaje:empty { display: none; }
+
+/* ---------- Animaciones al hacer scroll (las activa animaciones.js) ---------- */
+.barra-progreso {
+  position: fixed; top: 0; left: 0; height: 4px; width: 100%; z-index: 100;
+  transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+  background: linear-gradient(90deg, #00b4d8, #2fa7f7, #04b7fd);
+}
+.anim {
+  opacity: 0;
+  transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1), filter .8s cubic-bezier(.2, .7, .2, 1);
+  transition-delay: var(--retraso, 0ms);
+}
+.anim-subir     { transform: translateY(40px); }
+.anim-izquierda { transform: translateX(-60px); }
+.anim-derecha   { transform: translateX(60px); }
+.anim-zoom      { transform: scale(.88); }
+.anim-desenfoque { transform: translateY(20px); filter: blur(8px); }
+.anim.visible { opacity: 1; transform: none; filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim, .anim.visible { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+  .cinta-pista { animation: none; }
+  .barra-progreso { display: none; }
+}
+
+/* La barra de arriba es fija: al saltar a una sección, que el título no quede tapado */
+html { scroll-padding-top: 80px; }
+
+/* Quita el margen (W3.CSS no trae esta clase) */
+.sin-margen { margin: 0 !important; }

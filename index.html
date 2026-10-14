@@ -6,353 +6,308 @@
   <title>ECCI Noticias IA | Portal de inteligencia artificial de la ECCI</title>
   <meta name="description" content="Portal de noticias sobre inteligencia artificial de la Escuela de Ciencias de la Computación e Informática (ECCI), UCR.">
   <link rel="preconnect" href="https://i.ytimg.com">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="extra.css">
-  <link rel="stylesheet" href="animaciones.css">
-  <link rel="stylesheet" href="tema-diario.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto:wght@400;500;700&display=swap">
+  <!-- W3.CSS: casi todo el diseño son clases w3-... (guía: https://www.w3schools.com/w3css/) -->
+  <link rel="stylesheet" href="w3.css">
+  <!-- Colores UCR y lo poco que W3.CSS no trae -->
+  <link rel="stylesheet" href="ecci.css">
 </head>
 <body>
 
-  <header class="site-header">
-    <div class="contenedor header-fila">
-      <a class="marca" href="#inicio" aria-label="ECCI Noticias IA, inicio">
-        <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI, Escuela de Ciencias de la Computación e Informática" class="logo logo-ecci" width="58" height="58">
-        <span class="marca-texto">
-          <strong>ECCI<span>.IA</span></strong>
-          <small>Noticias de inteligencia artificial</small>
-        </span>
+  <!-- ===== Barra superior ===== -->
+  <header class="w3-top">
+    <div class="w3-bar w3-ucr w3-card">
+      <a href="#inicio" class="w3-bar-item w3-button w3-padding-small" aria-label="ECCI Noticias IA, inicio">
+        <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI" class="w3-circle" width="44" height="44" style="vertical-align:middle">
+        <b class="w3-large" style="vertical-align:middle">ECCI<span class="w3-text-celeste">.IA</span></b>
       </a>
-
-      <nav class="nav" aria-label="Secciones">
-        <a href="#principal">Principal</a>
-        <a href="#ultima">Última noticia</a>
-        <a href="#videos">Videos</a>
-        <a href="#opinion">Opinión</a>
-        <a href="#subir" class="btn btn-nav">+ Subir noticia</a>
+      <nav aria-label="Secciones">
+        <a href="#principal" class="w3-bar-item w3-button w3-hide-small w3-padding-16">Principal</a>
+        <a href="#ultima" class="w3-bar-item w3-button w3-hide-small w3-padding-16">Última noticia</a>
+        <a href="#videos" class="w3-bar-item w3-button w3-hide-small w3-padding-16">Videos</a>
+        <a href="#opinion" class="w3-bar-item w3-button w3-hide-small w3-padding-16">Opinión</a>
+        <button type="button" data-abrir="subir" class="w3-bar-item w3-button w3-celeste w3-round w3-hide-small" style="margin:10px 8px">+ Subir noticia</button>
+        <button type="button" data-menu class="w3-bar-item w3-button w3-right w3-hide-medium w3-hide-large w3-padding-16" aria-label="Abrir menú">☰</button>
       </nav>
-
-      <img src="imagenes/logo-ucr-124.png" alt="Logo Universidad de Costa Rica" class="logo logo-ucr" width="62" height="46">
+      <img src="imagenes/logo-ucr-124.png" alt="Logo Universidad de Costa Rica" class="w3-right w3-hide-small w3-margin-right" width="62" height="46" style="margin-top:6px">
+    </div>
+    <!-- Menú para celular (lo abre el botón ☰) -->
+    <div id="menu-movil" class="w3-bar-block w3-ucr w3-hide w3-hide-large w3-hide-medium">
+      <a href="#principal" class="w3-bar-item w3-button">Principal</a>
+      <a href="#ultima" class="w3-bar-item w3-button">Última noticia</a>
+      <a href="#videos" class="w3-bar-item w3-button">Videos</a>
+      <a href="#opinion" class="w3-bar-item w3-button">Opinión</a>
+      <button type="button" data-abrir="subir" class="w3-bar-item w3-button w3-celeste">+ Subir noticia</button>
     </div>
   </header>
 
-  <section class="headline" id="inicio" aria-label="Titulares destacados">
-    <div class="contenedor headline-fila">
-
-      <div class="cinta" aria-live="off">
-        <div class="cinta-pista">
-          <span>¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
-          <span>Abierta la convocatoria: publica tus propias noticias sobre IA</span>
-          <span>Nuevo ciclo de charlas sobre Big Data y Procesamiento de Lenguaje Natural</span>
-          <span>Estudiantes de la ECCI presentan proyectos de voz y accesibilidad</span>
-          <span aria-hidden="true">¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
-          <span aria-hidden="true">Abierta la convocatoria: publica tus propias noticias sobre IA</span>
-          <span aria-hidden="true">Nuevo ciclo de charlas sobre Big Data y Procesamiento de Lenguaje Natural</span>
-          <span aria-hidden="true">Estudiantes de la ECCI presentan proyectos de voz y accesibilidad</span>
-        </div>
-      </div>
+  <!-- ===== Cinta de titulares ===== -->
+  <section id="inicio" class="w3-marino w3-padding cinta" aria-label="Titulares destacados" style="margin-top:72px">
+    <div class="cinta-pista">
+      <span>¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
+      <span>Abierta la convocatoria: publica tus propias noticias sobre IA</span>
+      <span>Nuevo ciclo de charlas sobre Big Data y Procesamiento de Lenguaje Natural</span>
+      <span>Estudiantes de la ECCI presentan proyectos de voz y accesibilidad</span>
+      <span aria-hidden="true">¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
+      <span aria-hidden="true">Abierta la convocatoria: publica tus propias noticias sobre IA</span>
+      <span aria-hidden="true">Nuevo ciclo de charlas sobre Big Data y Procesamiento de Lenguaje Natural</span>
+      <span aria-hidden="true">Estudiantes de la ECCI presentan proyectos de voz y accesibilidad</span>
     </div>
   </section>
 
   <main>
 
-    <section class="seccion" id="principal">
-      <div class="contenedor">
-        <header class="seccion-titulo">
-          <h2>Lo principal</h2>
-          <p>Las noticias que están moviendo la ECCI</p>
+    <!-- ===== Lo principal ===== -->
+    <section id="principal" class="w3-container w3-padding-32">
+      <div class="ancho">
+        <header class="titulo-seccion w3-border-bottom w3-border-ucr w3-margin-bottom">
+          <h2 class="w3-text-ucr w3-xxlarge">Lo principal</h2>
+          <p class="w3-text-grey">Las noticias que están moviendo la ECCI</p>
         </header>
 
-        <section class="mas-noticias" aria-labelledby="mas-noticias-titulo">
-          <div class="mas-noticias-cabecera">
-            <h3 id="mas-noticias-titulo">Más noticias</h3>
-            <div class="mas-noticias-controles">
-              <span class="pista-scroll">Desliza o usa las flechas</span>
-              <button type="button" class="flecha" data-dir="-1" aria-label="Noticias anteriores">←</button>
-              <button type="button" class="flecha" data-dir="1" aria-label="Noticias siguientes">→</button>
-            </div>
-          </div>
-          <div class="scroll-noticias" tabindex="0" aria-label="Más noticias, desplazamiento horizontal">
-            <a class="mini" href="#principal">
-              <span class="mini-img" aria-hidden="true"></span>
-              <span class="mini-cat">Investigación</span>
-              <strong>Laboratorio de datos abre cupos para proyectos de Big Data</strong>
-              <small>Hace 2 h</small>
-            </a>
-            <a class="mini" href="#principal">
-              <span class="mini-img" aria-hidden="true"></span>
-              <span class="mini-cat">Accesibilidad</span>
-              <strong>Asistente de voz permite controlar la PC sin teclado ni mouse</strong>
-              <small>Hace 5 h</small>
-            </a>
-            <a class="mini" href="#principal">
-              <span class="mini-img" aria-hidden="true"></span>
-              <span class="mini-cat">NLP</span>
-              <strong>Así aprenden las máquinas a entender el español de Costa Rica</strong>
-              <small>Ayer</small>
-            </a>
-            <a class="mini" href="#principal">
-              <span class="mini-img" aria-hidden="true"></span>
-              <span class="mini-cat">Eventos</span>
-              <strong>Feria científica: los proyectos de IA que podrás ver en vivo</strong>
-              <small>Ayer</small>
-            </a>
-            <a class="mini" href="#principal">
-              <span class="mini-img" aria-hidden="true"></span>
-              <span class="mini-cat">Bases de datos</span>
-              <strong>Del Excel a la nube: cómo ordenar la información de una institución</strong>
-              <small>Hace 2 días</small>
-            </a>
-            <a class="mini" href="#principal">
-              <span class="mini-img" aria-hidden="true"></span>
-              <span class="mini-cat">Modelos locales</span>
-              <strong>Montan un servidor de modelos de lenguaje propio en la escuela</strong>
-              <small>Hace 3 días</small>
-            </a>
-            <a class="mini" href="#principal">
-              <span class="mini-img" aria-hidden="true"></span>
-              <span class="mini-cat">Comunidad</span>
-              <strong>Convocatoria abierta para escribir en el portal ECCI.IA</strong>
-              <small>Hace 4 días</small>
-            </a>
-          </div>
-        </section>
+        <div class="w3-bar">
+          <h3 class="w3-bar-item w3-padding-small">Más noticias</h3>
+          <button type="button" class="w3-bar-item w3-button w3-right w3-round w3-light-grey w3-margin-left" data-flecha="1" aria-label="Noticias siguientes">→</button>
+          <button type="button" class="w3-bar-item w3-button w3-right w3-round w3-light-grey" data-flecha="-1" aria-label="Noticias anteriores">←</button>
+        </div>
+        <!-- app.js llena este carrusel con las noticias de la base de datos -->
+        <div id="mas-noticias" class="carrusel" tabindex="0" aria-label="Más noticias, desplazamiento horizontal">
+          <p class="w3-text-grey">Cargando noticias…</p>
+        </div>
 
-        <div class="grid-3">
-          <article class="tarjeta">
-            <div class="tarjeta-img img-a" aria-hidden="true"></div>
-            <div class="tarjeta-cuerpo">
-              <span class="etiqueta">Big Data</span>
-              <h3><a href="#principal">Datos que hablan: la ECCI enseña a convertir millones de registros en decisiones</a></h3>
-              <p>Estudiantes de Bases de Datos y Análisis de Datos muestran cómo la visualización transforma cifras en historias claras.</p>
-              <footer class="meta">Por Redacción ECCI · <time datetime="2026-10-06">6 oct 2026</time></footer>
-            </div>
-          </article>
-
-          <article class="tarjeta">
-            <div class="tarjeta-img img-b" aria-hidden="true"></div>
-            <div class="tarjeta-cuerpo">
-              <span class="etiqueta">Lenguaje natural</span>
-              <h3><a href="#principal">¿Pueden las máquinas entendernos? Los chatbots universitarios dan sus primeros pasos</a></h3>
-              <p>El Procesamiento de Lenguaje Natural llega a las aulas con prácticas reales y modelos que corren en equipos locales.</p>
-              <footer class="meta">Por Redacción ECCI · <time datetime="2026-10-05">5 oct 2026</time></footer>
-            </div>
-          </article>
-
-          <article class="tarjeta">
-            <div class="tarjeta-img img-c" aria-hidden="true"></div>
-            <div class="tarjeta-cuerpo">
-              <span class="etiqueta">Inclusión</span>
-              <h3><a href="#principal">Tecnología sin barreras: proyectos de voz abren la computadora a más personas</a></h3>
-              <p>Una nueva generación de aplicaciones busca que el control de un computador sea posible para personas con discapacidad motora.</p>
-              <footer class="meta">Por Redacción ECCI · <time datetime="2026-10-03">3 oct 2026</time></footer>
-            </div>
-          </article>
+        <!-- app.js pone aquí 3 noticias al azar -->
+        <div id="principales" class="w3-row-padding w3-section" style="margin:0 -16px">
+          <p class="w3-text-grey w3-padding">Cargando noticias…</p>
         </div>
       </div>
     </section>
 
-    <section class="seccion seccion-oscura" id="ultima">
-      <div class="contenedor">
-        <header class="seccion-titulo claro">
-          <h2>Última noticia</h2>
-          <p>Lo más reciente, directo desde la ECCI</p>
+    <!-- ===== Última noticia ===== -->
+    <section id="ultima" class="w3-container w3-marino w3-padding-32">
+      <div class="ancho">
+        <header class="titulo-seccion w3-margin-bottom">
+          <h2 class="w3-xxlarge">Última noticia</h2>
+          <p class="w3-text-light-grey">Lo más reciente, directo desde la ECCI</p>
         </header>
-
-        <article class="ultima">
-          <figure class="ultima-foto">
-            <img src="imagenes/robot-ia.jpg" loading="lazy" decoding="async" alt="Estudiantes de la ECCI rodean a un robot humanoide en el vestíbulo de la escuela">
-            <figcaption>Estudiantes de la ECCI interactúan con un robot humanoide durante la actividad.</figcaption>
-          </figure>
-
-          <div class="ultima-texto">
-
-            <h3>¡La IA llegó a la ECCI! Un robot, cientos de curiosos y el futuro de la computación en la UCR</h3>
-            <p class="bajada">
-              La Escuela de Ciencias de la Computación e Informática abrió sus puertas a la inteligencia artificial
-              y la comunidad estudiantil respondió: pasillos llenos, celulares en alto y una pregunta en el aire,
-              ¿cómo será trabajar junto a las máquinas?
-            </p>
-            <p>
-              La ECCI abrió sus puertas a la inteligencia artificial con una actividad en la que estudiantes y docentes
-              se acercaron a conocer de cerca un robot humanoide y las tecnologías que lo hacen posible. La iniciativa
-              busca acercar la IA a toda la comunidad universitaria y fomentar el debate sobre su uso responsable.
-            </p>
-            <footer class="meta meta-clara">Por Redacción ECCI · <time datetime="2026-10-08">8 oct 2026</time></footer>
-            <a href="#ultima" class="btn btn-claro">Leer noticia completa</a>
-          </div>
+        <!-- app.js llena esta parte -->
+        <article id="ultima-noticia" class="w3-row-padding" style="margin:0 -16px">
+          <p class="w3-padding">Cargando…</p>
         </article>
       </div>
     </section>
 
-    <section class="seccion" id="videos">
-      <div class="contenedor">
-        <header class="seccion-titulo">
-          <h2>Videos</h2>
-          <p>Charlas, demostraciones y proyectos en movimiento</p>
+    <!-- ===== Videos ===== -->
+    <section id="videos" class="w3-container w3-padding-32">
+      <div class="ancho">
+        <header class="titulo-seccion w3-border-bottom w3-border-ucr w3-margin-bottom">
+          <h2 class="w3-text-ucr w3-xxlarge">Videos</h2>
+          <p class="w3-text-grey">Charlas, demostraciones y proyectos en movimiento</p>
         </header>
-
-        <div class="grid-videos">
-
-          <article class="video">
-            <a class="video-marco v-a" href="#videos" aria-label="Reproducir video: Demostración del robot en la ECCI">
-              <span class="play" aria-hidden="true"></span>
-              <time class="duracion" datetime="PT3M25S">03:25</time>
-            </a>
-            <h3>Demostración del robot humanoide en la ECCI</h3>
-            <p class="meta">Evento · <time datetime="2026-10-08">8 oct 2026</time></p>
-          </article>
-
-          <article class="video">
-            <a class="video-marco v-b" href="#videos" aria-label="Reproducir video: Asistente de voz para control de PC">
-              <span class="play" aria-hidden="true"></span>
-              <time class="duracion" datetime="PT6M10S">06:10</time>
-            </a>
-            <h3>Asistente de voz: controla tu PC sin las manos</h3>
-            <p class="meta">Proyecto estudiantil · <time datetime="2026-10-02">2 oct 2026</time></p>
-          </article>
-
-          <article class="video">
-            <a class="video-marco v-c" href="#videos" aria-label="Reproducir video: Introducción a Big Data">
-              <span class="play" aria-hidden="true"></span>
-              <time class="duracion" datetime="PT12M45S">12:45</time>
-            </a>
-            <h3>Big Data en 10 minutos: de los datos al insight</h3>
-            <p class="meta">Charla · <time datetime="2026-09-28">28 sep 2026</time></p>
-          </article>
+        <!-- app.js llena esta lista con los videos aprobados -->
+        <div id="lista-videos" class="w3-row-padding" style="margin:0 -16px">
+          <p class="w3-text-grey w3-padding">Cargando videos…</p>
         </div>
+        <p class="w3-center w3-section">
+          <button type="button" data-abrir="subir-video" class="w3-button w3-ucr w3-round">+ Compartir un video</button>
+        </p>
       </div>
     </section>
 
-    <section class="seccion seccion-suave" id="opinion">
-      <div class="contenedor">
-        <header class="seccion-titulo">
-          <h2>Opinión</h2>
-          <p class="debate">
-            <span class="debate-etiqueta">Debate abierto</span>
-            <span class="debate-tema" id="tema-debate" aria-live="off">¿La IA es aliada o amenaza para la universidad?</span>
-
+    <!-- ===== Opinión ===== -->
+    <section id="opinion" class="w3-container w3-white w3-padding-32">
+      <div class="ancho">
+        <header class="titulo-seccion w3-border-bottom w3-border-ucr w3-margin-bottom">
+          <h2 class="w3-text-ucr w3-xxlarge">Opinión</h2>
+          <p>
+            <span class="w3-tag w3-ucr w3-round">Debate abierto</span>
+            <b id="tema-debate" class="w3-large" aria-live="off">¿La IA es aliada o amenaza para la universidad?</b>
           </p>
         </header>
 
-        <div class="foro">
+        <div class="w3-row-padding" style="margin:0 -16px">
+          <div class="w3-third w3-margin-bottom">
+            <form id="form-opinion" class="w3-card w3-round w3-padding w3-light-grey" action="#" method="post">
+              <h3>Deja tu opinión</h3>
+              <label for="op-nombre">Nombre</label>
+              <input id="op-nombre" name="nombre" type="text" class="w3-input w3-border w3-round w3-margin-bottom" placeholder="Tu nombre o alias" required>
 
-          <form class="foro-form" action="#" method="post">
-            <h3>Deja tu opinión</h3>
-            <label for="op-nombre">Nombre</label>
-            <input id="op-nombre" name="nombre" type="text" placeholder="Tu nombre o alias" required>
+              <label for="op-tema">Tema</label>
+              <select id="op-tema" name="tema" class="w3-select w3-border w3-round w3-margin-bottom">
+                <option>La IA en las aulas</option>
+                <option>Ética y uso responsable</option>
+                <option>Futuro laboral</option>
+                <option>Otro tema</option>
+              </select>
 
-            <label for="op-tema">Tema</label>
-            <select id="op-tema" name="tema">
-              <option>La IA en las aulas</option>
-              <option>Ética y uso responsable</option>
-              <option>Futuro laboral</option>
-              <option>Otro tema</option>
-            </select>
+              <label for="op-texto">Tu opinión</label>
+              <textarea id="op-texto" name="opinion" rows="5" class="w3-input w3-border w3-round w3-margin-bottom" placeholder="Cuéntanos qué piensas…" required></textarea>
 
-            <label for="op-texto">Tu opinión</label>
-            <textarea id="op-texto" name="opinion" rows="5" placeholder="Cuéntanos qué piensas…" required></textarea>
+              <button type="submit" class="w3-button w3-ucr w3-round w3-block">Publicar opinión</button>
+              <p class="w3-small w3-text-grey aviso">Las opiniones serán revisadas antes de publicarse.</p>
+            </form>
+          </div>
 
-            <button type="submit" class="btn btn-primario">Publicar opinión</button>
-            <small class="aviso">Las opiniones serán revisadas antes de publicarse.</small>
-          </form>
-
-          <section class="hilo" aria-label="Opiniones publicadas"></section>
+          <!-- app.js pone aquí las opiniones aprobadas, con sus «me gusta» y comentarios -->
+          <section id="hilo" class="w3-twothird" aria-label="Opiniones publicadas">
+            <p class="w3-text-grey">Cargando opiniones…</p>
+          </section>
         </div>
       </div>
     </section>
 
-    <aside class="cta" aria-labelledby="cta-titulo">
-      <div class="contenedor cta-fila">
-        <div>
-          <h2 id="cta-titulo">¿Tienes una noticia sobre IA?</h2>
-          <p>Compártela con la comunidad ECCI.</p>
-        </div>
-        <a href="#subir" class="btn btn-claro btn-grande">+ Subir mi noticia</a>
-      </div>
+    <!-- ===== Invitación a subir noticias ===== -->
+    <aside id="cta" class="w3-container w3-ucr w3-padding-32 w3-center" aria-labelledby="cta-titulo">
+      <h2 id="cta-titulo">¿Tienes una noticia sobre IA?</h2>
+      <p>Compártela con la comunidad ECCI.</p>
+      <button type="button" data-abrir="subir" class="w3-button w3-white w3-text-ucr w3-round w3-large">+ Subir mi noticia</button>
     </aside>
 
   </main>
 
-  <footer class="site-footer">
-    <div class="contenedor footer-fila">
-      <div class="footer-logos">
-        <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI" class="logo logo-ecci" width="58" height="58" loading="lazy">
-        <img src="imagenes/logo-ucr-124.png" alt="Logo UCR" class="logo logo-ucr" width="62" height="46" loading="lazy">
-      </div>
-      <p>ECCI.IA · Portal estudiantil de noticias sobre inteligencia artificial<br>
-        Escuela de Ciencias de la Computación e Informática · Universidad de Costa Rica</p>
-    </div>
+  <!-- ===== Pie de página ===== -->
+  <footer class="w3-container w3-marino w3-padding-32 w3-center">
+    <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI" class="w3-circle w3-margin-right" width="58" height="58" loading="lazy">
+    <img src="imagenes/logo-ucr-124.png" alt="Logo UCR" width="62" height="46" loading="lazy">
+    <p>ECCI.IA · Portal estudiantil de noticias sobre inteligencia artificial<br>
+      Escuela de Ciencias de la Computación e Informática · Universidad de Costa Rica</p>
   </footer>
 
-  <div class="modal" id="subir" role="dialog" aria-modal="true" aria-labelledby="subir-titulo">
-    <a href="#principal" class="modal-fondo" aria-label="Cerrar"></a>
-    <div class="modal-caja">
-      <a href="#principal" class="modal-cerrar" aria-label="Cerrar ventana">×</a>
-      <h2 id="subir-titulo">Sube tu noticia</h2>
-      <p class="modal-intro">Tu noticia quedará <strong>pendiente de aprobación</strong>. Un moderador la revisará antes de publicarla en el portal.</p>
+  <!-- ===== Ventana para subir una noticia (W3 modal) ===== -->
+  <div id="subir" class="w3-modal" role="dialog" aria-modal="true" aria-labelledby="subir-titulo">
+    <div class="w3-modal-content w3-card-4 w3-round w3-animate-top" style="max-width:720px">
+      <header class="w3-container w3-ucr">
+        <button type="button" data-cerrar class="w3-button w3-display-topright w3-large" aria-label="Cerrar ventana">×</button>
+        <h2 id="subir-titulo">Sube tu noticia</h2>
+      </header>
+      <div class="w3-container w3-padding">
+        <p>Tu noticia quedará <strong>pendiente de aprobación</strong>. Un moderador la revisará antes de publicarla en el portal.</p>
 
-      <form action="#" method="post" enctype="multipart/form-data">
-        <div class="campo-2">
-          <div>
-            <label for="n-autor">Nombre del autor</label>
-            <input id="n-autor" name="autor" type="text" required>
+        <form action="#" method="post" enctype="multipart/form-data">
+          <div class="w3-row-padding" style="margin:0 -16px">
+            <div class="w3-half">
+              <label for="n-autor">Nombre del autor</label>
+              <input id="n-autor" name="autor" type="text" class="w3-input w3-border w3-round w3-margin-bottom" required>
+            </div>
+            <div class="w3-half">
+              <label for="n-correo">Correo institucional</label>
+              <input id="n-correo" name="correo" type="email" class="w3-input w3-border w3-round w3-margin-bottom" placeholder="nombre@ucr.ac.cr" required>
+            </div>
           </div>
-          <div>
-            <label for="n-correo">Correo institucional</label>
-            <input id="n-correo" name="correo" type="email" placeholder="nombre@ucr.ac.cr" required>
+
+          <label for="n-titulo">Título de la noticia</label>
+          <input id="n-titulo" name="titulo" type="text" maxlength="120" class="w3-input w3-border w3-round w3-margin-bottom" required>
+
+          <label for="n-cat">Categoría</label>
+          <select id="n-cat" name="categoria" class="w3-select w3-border w3-round w3-margin-bottom">
+            <option>Inteligencia artificial</option>
+            <option>Big Data</option>
+            <option>Bases de datos</option>
+            <option>Procesamiento de lenguaje natural</option>
+            <option>Eventos</option>
+            <option>Proyectos estudiantiles</option>
+          </select>
+
+          <label for="n-resumen">Resumen (máx. 200 caracteres)</label>
+          <textarea id="n-resumen" name="resumen" rows="2" maxlength="200" class="w3-input w3-border w3-round w3-margin-bottom" required></textarea>
+
+          <label for="n-contenido">Contenido</label>
+          <textarea id="n-contenido" name="contenido" rows="6" class="w3-input w3-border w3-round w3-margin-bottom" required></textarea>
+
+          <label for="n-img">Imagen (opcional)</label>
+          <input id="n-img" name="imagen" type="file" accept="image/*" class="w3-input w3-border w3-round w3-margin-bottom">
+
+          <p>
+            <label>
+              <input type="checkbox" name="acepta" class="w3-check" required>
+              Confirmo que la información es veraz y acepto que sea revisada antes de su publicación.
+            </label>
+          </p>
+
+          <div class="botones w3-right-align w3-padding-16">
+            <button type="button" data-cerrar class="w3-button w3-light-grey w3-round">Cancelar</button>
+            <button type="submit" class="w3-button w3-ucr w3-round">Enviar para revisión</button>
           </div>
-        </div>
-
-        <label for="n-titulo">Título de la noticia</label>
-        <input id="n-titulo" name="titulo" type="text" maxlength="120" required>
-
-        <label for="n-cat">Categoría</label>
-        <select id="n-cat" name="categoria">
-          <option>Inteligencia artificial</option>
-          <option>Big Data</option>
-          <option>Bases de datos</option>
-          <option>Procesamiento de lenguaje natural</option>
-          <option>Eventos</option>
-          <option>Proyectos estudiantiles</option>
-        </select>
-
-        <label for="n-resumen">Resumen (máx. 200 caracteres)</label>
-        <textarea id="n-resumen" name="resumen" rows="2" maxlength="200" required></textarea>
-
-        <label for="n-contenido">Contenido</label>
-        <textarea id="n-contenido" name="contenido" rows="6" required></textarea>
-
-        <label for="n-img">Imagen (opcional)</label>
-        <input id="n-img" name="imagen" type="file" accept="image/*">
-
-        <label class="check">
-          <input type="checkbox" name="acepta" required>
-          Confirmo que la información es veraz y acepto que sea revisada antes de su publicación.
-        </label>
-
-        <div class="modal-botones">
-          <a href="#principal" class="btn btn-fantasma">Cancelar</a>
-          <button type="submit" class="btn btn-primario">Enviar para revisión</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 
+  <!-- ===== Ventana para compartir un video ===== -->
+  <div id="subir-video" class="w3-modal" role="dialog" aria-modal="true" aria-labelledby="subir-video-titulo">
+    <div class="w3-modal-content w3-card-4 w3-round w3-animate-top" style="max-width:720px">
+      <header class="w3-container w3-ucr">
+        <button type="button" data-cerrar class="w3-button w3-display-topright w3-large" aria-label="Cerrar ventana">×</button>
+        <h2 id="subir-video-titulo">Comparte un video</h2>
+      </header>
+      <div class="w3-container w3-padding">
+        <p>Sube tu video a <strong>YouTube</strong> (puede ser «No listado») y pega aquí el enlace.
+          Quedará <strong>pendiente de aprobación</strong> hasta que un moderador lo revise.</p>
+
+        <form action="#" method="post">
+          <div class="w3-row-padding" style="margin:0 -16px">
+            <div class="w3-half">
+              <label for="v-autor">Nombre del autor</label>
+              <input id="v-autor" name="autor" type="text" maxlength="80" class="w3-input w3-border w3-round w3-margin-bottom" required>
+            </div>
+            <div class="w3-half">
+              <label for="v-correo">Correo institucional</label>
+              <input id="v-correo" name="correo" type="email" class="w3-input w3-border w3-round w3-margin-bottom" placeholder="nombre@ucr.ac.cr" required>
+            </div>
+          </div>
+
+          <label for="v-enlace">Enlace de YouTube</label>
+          <input id="v-enlace" name="enlace" type="url" class="w3-input w3-border w3-round w3-margin-bottom" placeholder="https://youtu.be/..." required>
+
+          <label for="v-titulo">Título del video</label>
+          <input id="v-titulo" name="titulo" type="text" maxlength="120" class="w3-input w3-border w3-round w3-margin-bottom" required>
+
+          <!-- Las categorías deben coincidir con backend/config.py -->
+          <label for="v-cat">Categoría</label>
+          <select id="v-cat" name="categoria" class="w3-select w3-border w3-round w3-margin-bottom">
+            <option>Charla</option>
+            <option>Demostración</option>
+            <option>Proyecto estudiantil</option>
+            <option>Evento</option>
+            <option>Tutorial</option>
+          </select>
+
+          <label for="v-desc">Descripción (opcional, máx. 300 caracteres)</label>
+          <textarea id="v-desc" name="descripcion" rows="2" maxlength="300" class="w3-input w3-border w3-round w3-margin-bottom"></textarea>
+
+          <p>
+            <label>
+              <input type="checkbox" name="acepta" class="w3-check" required>
+              Confirmo que tengo permiso para compartir este video y acepto que sea revisado antes de publicarse.
+            </label>
+          </p>
+
+          <div class="botones w3-right-align w3-padding-16">
+            <button type="button" data-cerrar class="w3-button w3-light-grey w3-round">Cancelar</button>
+            <button type="submit" class="w3-button w3-ucr w3-round">Enviar para revisión</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Ventana para leer una noticia completa (app.js la llena) ===== -->
+  <div id="leer" class="w3-modal" role="dialog" aria-modal="true" aria-labelledby="leer-titulo">
+    <article class="w3-modal-content w3-card-4 w3-round w3-animate-top" style="max-width:800px">
+      <div class="w3-container w3-padding-16">
+        <button type="button" data-cerrar class="w3-button w3-display-topright w3-large" aria-label="Cerrar ventana">×</button>
+        <span id="leer-categoria" class="w3-tag w3-ucr w3-round"></span>
+        <h2 id="leer-titulo"></h2>
+        <p id="leer-meta" class="w3-text-grey"></p>
+        <img id="leer-imagen" class="w3-image w3-round w3-margin-bottom" style="width:100%" alt="" hidden>
+        <div id="leer-texto"></div>
+      </div>
+    </article>
+  </div>
+
   <script>
+  /* Tema del debate: cambia solo cada 7 segundos */
   (function () {
     "use strict";
-
-    var pista = document.querySelector(".scroll-noticias");
-    var flechas = document.querySelectorAll(".flecha");
-    if (pista && flechas.length) {
-      flechas.forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var dir = Number(btn.getAttribute("data-dir"));
-          var paso = pista.clientWidth * 0.8;
-          pista.scrollBy({ left: dir * paso, behavior: "smooth" });
-        });
-      });
-    }
 
     var temas = [
       "¿La IA es aliada o amenaza para la universidad?",
@@ -375,7 +330,7 @@
 
     var elTema = document.getElementById("tema-debate");
     if (!elTema) { return; }
-    var zona = elTema.closest(".debate") || elTema;
+    var zona = elTema.parentNode;
     var pausado = false;
 
     function leerUltimo() {

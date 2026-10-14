@@ -667,8 +667,8 @@ class PruebasSeguridadYArchivos(Base):
         self.assertEqual(self.c.get("/api/salud").get_json(), {"ok": True, "base_de_datos": True})
 
     def test_paginas_publicas(self):
-        for ruta, texto in (("/", "ECCI"), ("/admin", "moderación"), ("/styles.css", "--azul-ucr"),
-                            ("/extra.css", ".mensaje"), ("/app.js", "ECCI")):
+        for ruta, texto in (("/", "ECCI"), ("/admin", "moderación"), ("/w3.css", "w3-modal"),
+                            ("/ecci.css", ".w3-ucr"), ("/app.js", "ECCI")):
             with self.subTest(ruta=ruta):
                 r = self.c.get(ruta)
                 self.assertEqual(r.status_code, 200)
