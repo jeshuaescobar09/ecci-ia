@@ -32,7 +32,10 @@
 
   function fondoImagen(nodo, url) {
     var u = urlImagen(url);
-    if (u) { nodo.style.backgroundImage = "url('" + u + "')"; }
+    if (u) {
+      nodo.style.backgroundImage = "url('" + u + "')";
+      nodo.classList.add("con-foto");
+    }
   }
 
   var MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -124,9 +127,6 @@
       if (abrir) { e.preventDefault(); abrirVentana(abrir.getAttribute("data-abrir")); return; }
       // Clic en el botón de cerrar o en el fondo oscuro de la ventana
       if (e.target.closest("[data-cerrar]") || e.target.classList.contains("w3-modal")) { cerrarVentana(); return; }
-      // Botón ☰ del celular
-      if (e.target.closest("[data-menu]")) { document.getElementById("menu-movil").classList.toggle("w3-show"); return; }
-      if (e.target.closest("#menu-movil a")) { document.getElementById("menu-movil").classList.remove("w3-show"); }
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") { cerrarVentana(); }
@@ -187,25 +187,28 @@
     return pie;
   }
 
-  function vacio(cont, texto) {
-    cont.appendChild(crear("p", "w3-text-grey w3-padding", texto));
+  function vacio(cont, texto, clase) {
+    cont.appendChild(crear("p", "w3-white w3-center w3-padding-24 w3-round w3-text-suave " + (clase || ""), texto)).style.fontWeight = "600";
   }
+
+  // Cada noticia sin foto lleva un degradado distinto
+  var DEGRADADOS = ["", " foto-b", " foto-c"];
 
   function pintarMas(lista) {
     var pista = document.getElementById("mas-noticias");
     if (!pista) { return; }
     pista.textContent = "";
-    if (!lista.length) { vacio(pista, "Todavía no hay noticias publicadas."); return; }
-    lista.forEach(function (n) {
-      var tarjeta = crear("a", "w3-card w3-white w3-round w3-hover-shadow");
-      var imagen = crear("div", "foto foto-mini");
+    if (!lista.length) { vacio(pista, "Todavía no hay noticias publicadas.", "w3-col"); return; }
+    lista.forEach(function (n, i) {
+      var tarjeta = crear("a", "w3-white w3-border w3-border-linea");
+      var imagen = crear("div", "foto foto-mini" + DEGRADADOS[i % 3]);
       imagen.setAttribute("aria-hidden", "true");
       fondoImagen(imagen, n.imagen_url);
       tarjeta.appendChild(imagen);
-      var cuerpo = crear("div", "w3-container w3-padding-small");
-      cuerpo.appendChild(crear("span", "w3-small w3-text-ucr", n.categoria));
-      cuerpo.appendChild(crear("p", "sin-margen", n.titulo)).style.fontWeight = "bold";
-      var cuando = crear("small", "w3-text-grey");
+      var cuerpo = crear("div", "w3-container w3-padding-16");
+      cuerpo.appendChild(crear("span", "categoria", n.categoria));
+      cuerpo.appendChild(crear("strong", "letra-diario titular", n.titulo));
+      var cuando = crear("small", "w3-text-suave w3-padding-16");
       cuando.appendChild(fecha(hace(n.fecha), n.fecha));
       cuerpo.appendChild(cuando);
       tarjeta.appendChild(cuerpo);
@@ -214,33 +217,46 @@
     });
   }
 
+  // La primera noticia va grande a la izquierda; las otras dos, al lado con la foto pequeña
   function pintarPrincipales(lista) {
     var cont = document.getElementById("principales");
     if (!cont) { return; }
     cont.textContent = "";
     if (!lista.length) { vacio(cont, "Todavía no hay noticias publicadas. ¡Sé la primera persona en subir una!"); return; }
-    lista.forEach(function (n) {
-      var columna = crear("div", "w3-third w3-margin-bottom");
-      var tarjeta = crear("article", "w3-card w3-white w3-round w3-hover-shadow");
-      var imagen = crear("div", "foto");
+
+    var grande = crear("div", "w3-col l8 m12 w3-padding");
+    var lado = crear("div", "w3-col l4 m12 w3-padding");
+    cont.appendChild(grande);
+    cont.appendChild(lado);
+
+    lista.forEach(function (n, i) {
+      var tarjeta = crear("article", i === 0 ? "w3-margin-bottom" : "w3-row w3-border-bottom w3-border-linea tarjeta-lado");
+      var imagen = crear("div", "foto" + DEGRADADOS[i % 3] + (i === 0 ? " foto-grande" : " foto-lado"));
       imagen.setAttribute("aria-hidden", "true");
       fondoImagen(imagen, n.imagen_url);
 
-      var cuerpo = crear("div", "w3-container w3-padding");
-      cuerpo.appendChild(crear("span", "w3-tag w3-ucr w3-round w3-small", n.categoria));
-      var titulo = crear("h3", "w3-large");
-      var enlace = crear("a", "w3-text-black", n.titulo);
-      enlace.style.textDecoration = "none";
+      var titulo = crear("h3", "letra-diario " + (i === 0 ? "titular-principal" : "titular-lado"));
+      titulo.style.margin = "0 0 8px";
+      var enlace = crear("a", "titular", n.titulo);
       enlaceALector(enlace, n.id);
       titulo.appendChild(enlace);
-      cuerpo.appendChild(titulo);
-      cuerpo.appendChild(crear("p", null, n.resumen));
-      cuerpo.appendChild(firma("w3-small w3-text-grey", n.autor, n.fecha));
 
-      tarjeta.appendChild(imagen);
+      var cuerpo = crear("div", i === 0 ? "w3-padding-16" : "w3-col s7");
+      if (i > 0) { cuerpo.style.paddingLeft = "16px"; }
+      cuerpo.appendChild(crear("span", "categoria", n.categoria));
+      cuerpo.appendChild(titulo);
+      cuerpo.appendChild(crear("p", "w3-text-suave" + (i === 0 ? "" : " dos-lineas w3-small"), n.resumen));
+      cuerpo.appendChild(firma("w3-small w3-text-suave", n.autor, n.fecha));
+
+      if (i === 0) {
+        tarjeta.appendChild(imagen);
+      } else {
+        var col = crear("div", "w3-col s5");
+        col.appendChild(imagen);
+        tarjeta.appendChild(col);
+      }
       tarjeta.appendChild(cuerpo);
-      columna.appendChild(tarjeta);
-      cont.appendChild(columna);
+      (i === 0 ? grande : lado).appendChild(tarjeta);
     });
   }
 
@@ -248,32 +264,32 @@
     var cont = document.getElementById("ultima-noticia");
     if (!cont) { return; }
     cont.textContent = "";
-    if (!n) { cont.appendChild(crear("p", "w3-padding", "Todavía no hay una última noticia.")); return; }
+    if (!n) { vacio(cont, "Todavía no hay una última noticia.", "w3-gris-suave w3-margin"); return; }
 
     var url = urlImagen(n.imagen_url);
     if (url) {
-      var figura = crear("figure", "w3-half sin-margen w3-margin-bottom");
-      var foto = crear("img", "foto-ultima w3-round");
+      var figura = crear("figure", "w3-col l7 m12 w3-padding sin-margen");
+      var foto = crear("img", "foto-ultima");
       foto.src = url;
       foto.alt = "Imagen de la noticia: " + n.titulo;
       figura.appendChild(foto);
       cont.appendChild(figura);
     }
 
-    var texto = crear("div", url ? "w3-half" : "w3-col s12");
-    texto.appendChild(crear("span", "w3-tag w3-celeste w3-round", n.categoria + " · Última hora"));
-    texto.appendChild(crear("h3", "w3-xlarge", n.titulo));
-    texto.appendChild(crear("p", "w3-large", n.resumen));
+    var texto = crear("div", (url ? "w3-col l5 m12" : "w3-col s12") + " w3-padding");
+    texto.appendChild(crear("span", "categoria", n.categoria + " · Última hora"));
+    texto.appendChild(crear("h3", "titular-grande", n.titulo));
+    texto.appendChild(crear("p", "w3-leftbar w3-border-ucr w3-padding-small", n.resumen)).style.cssText = "font-weight:500;font-size:1.08rem;border-left-width:3px!important;padding-left:14px!important";
     var primero = parrafos(n.contenido)[0];
-    if (primero) { texto.appendChild(crear("p", "w3-text-light-grey", primero)); }
-    texto.appendChild(firma("w3-small w3-text-light-grey w3-margin-bottom", n.autor, n.fecha));
-    var boton = crear("a", "w3-button w3-white w3-text-ucr w3-round", "Leer noticia completa");
+    if (primero) { texto.appendChild(crear("p", "w3-text-suave", primero)); }
+    texto.appendChild(firma("w3-small w3-text-suave w3-margin-bottom", n.autor, n.fecha));
+    var boton = crear("a", "w3-button w3-ucr w3-hover-ucr-oscuro w3-round mayus", "Leer noticia completa");
     enlaceALector(boton, n.id);
     texto.appendChild(boton);
     cont.appendChild(texto);
   }
 
-  var COLORES_AVATAR = ["w3-ucr", "w3-celeste", "w3-marino"];
+  var COLORES_AVATAR = ["w3-ucr", "w3-ucr-oscuro", "w3-dark-grey"];
 
   function pintarOpiniones(lista) {
     var hilo = document.getElementById("hilo");
@@ -281,31 +297,30 @@
     hilo.textContent = "";
     if (!lista.length) { vacio(hilo, "Todavía no hay opiniones. ¡Sé la primera persona en opinar!"); return; }
     lista.forEach(function (o, i) {
-      var articulo = crear("article", "w3-card w3-round w3-white w3-padding w3-margin-bottom");
-      var cabecera = crear("header", "w3-bar");
-      var avatar = crear("span", "w3-bar-item w3-circle w3-center " + COLORES_AVATAR[i % 3], Array.from(o.nombre || "?")[0].toUpperCase());
-      avatar.style.cssText = "width:40px;height:40px;padding:8px 0;margin-right:8px";
+      var articulo = crear("article", "opinion w3-white w3-border-bottom w3-border-linea w3-padding-large w3-margin-bottom");
+      var avatar = crear("div", "avatar w3-circle w3-center " + COLORES_AVATAR[i % 3], Array.from(o.nombre || "?")[0].toUpperCase());
       avatar.setAttribute("aria-hidden", "true");
-      cabecera.appendChild(avatar);
-      var quien = crear("div", "w3-bar-item w3-padding-small");
-      quien.appendChild(crear("strong", null, o.nombre));
-      quien.appendChild(document.createTextNode(" "));
-      quien.appendChild(crear("span", "w3-tag w3-light-grey w3-round w3-small", o.tema));
-      quien.appendChild(crear("br"));
-      var hora = crear("time", "w3-small w3-text-grey", hace(o.fecha));
+      articulo.appendChild(avatar);
+
+      var cuerpo = crear("div");
+      var cabecera = crear("header");
+      cabecera.appendChild(crear("strong", null, o.nombre));
+      cabecera.appendChild(document.createTextNode(" "));
+      cabecera.appendChild(crear("span", "categoria w3-margin-left", o.tema)).style.display = "inline";
+      var hora = crear("time", "w3-small w3-text-suave w3-right", hace(o.fecha));
       hora.setAttribute("datetime", o.fecha);
-      quien.appendChild(hora);
-      cabecera.appendChild(quien);
-      articulo.appendChild(cabecera);
-      articulo.appendChild(crear("p", null, o.texto));
+      cabecera.appendChild(hora);
+      cuerpo.appendChild(cabecera);
+      cuerpo.appendChild(crear("p", "sin-margen w3-padding-small", o.texto)).style.paddingLeft = "0";
 
       var respuestas = zonaDeComentarios(o);
-      var acciones = crear("footer");
+      var acciones = crear("footer", "w3-margin-top");
       acciones.appendChild(botonMeGusta(o));
       acciones.appendChild(document.createTextNode(" "));
       acciones.appendChild(botonComentarios(respuestas, (o.comentarios || []).length));
-      articulo.appendChild(acciones);
-      articulo.appendChild(respuestas);
+      cuerpo.appendChild(acciones);
+      cuerpo.appendChild(respuestas);
+      articulo.appendChild(cuerpo);
       hilo.appendChild(articulo);
     });
   }
@@ -329,7 +344,7 @@
     boton.textContent = "👍 " + likes;
     boton.setAttribute("aria-pressed", meGusta ? "true" : "false");
     boton.setAttribute("aria-label", (meGusta ? "Quitar me gusta" : "Me gusta") + " (" + likes + ")");
-    boton.className = "w3-button w3-round w3-small " + (meGusta ? "w3-ucr" : "w3-light-grey");
+    boton.className = "w3-button w3-border pildora " + (meGusta ? "w3-pale-blue w3-border-ucr" : "w3-white");
   }
 
   function botonMeGusta(o) {
@@ -357,7 +372,7 @@
   }
 
   function botonComentarios(zona, n) {
-    var boton = crear("button", "w3-button w3-light-grey w3-round w3-small", textoComentarios(n));
+    var boton = crear("button", "w3-button w3-white w3-border pildora", textoComentarios(n));
     boton.type = "button";
     boton.setAttribute("aria-expanded", "false");
     boton.addEventListener("click", function () {
@@ -368,23 +383,23 @@
   }
 
   function zonaDeComentarios(o) {
-    var zona = crear("div", "w3-margin-top");
+    var zona = crear("div", "w3-margin-top w3-leftbar w3-border-linea w3-padding");
     zona.hidden = true;
 
     (o.comentarios || []).forEach(function (c) {
-      var item = crear("div", "w3-panel w3-light-grey w3-leftbar w3-border-ucr w3-round");
-      var cabecera = crear("p", "sin-margen w3-padding-small");
+      var item = crear("div", "w3-margin-bottom");
+      var cabecera = crear("p", "sin-margen");
       cabecera.appendChild(crear("strong", null, c.nombre));
       cabecera.appendChild(document.createTextNode(" "));
-      var hora = crear("time", "w3-small w3-text-grey", hace(c.fecha));
+      var hora = crear("time", "w3-small w3-text-suave", hace(c.fecha));
       hora.setAttribute("datetime", c.fecha);
       cabecera.appendChild(hora);
       item.appendChild(cabecera);
-      item.appendChild(crear("p", "sin-margen w3-padding-small", c.texto));
+      item.appendChild(crear("p", "sin-margen", c.texto));
       zona.appendChild(item);
     });
 
-    var formulario = crear("form", "w3-container w3-padding-small");
+    var formulario = crear("form");
     var idNombre = "c-nombre-" + o.id;
     var idTexto = "c-texto-" + o.id;
     var etiquetaNombre = crear("label", null, "Nombre");
@@ -403,7 +418,7 @@
     texto.rows = 2;
     texto.maxLength = 500;
     texto.required = true;
-    var boton = crear("button", "w3-button w3-ucr w3-round", "Comentar");
+    var boton = crear("button", "w3-button w3-ucr w3-hover-ucr-oscuro w3-round mayus", "Comentar");
     boton.type = "submit";
 
     formulario.appendChild(etiquetaNombre);
@@ -448,23 +463,23 @@
     if (!cont) { return; }
     cont.textContent = "";
     lista = lista.filter(function (v) { return ID_YOUTUBE.test(v.youtube_id); });
-    if (!lista.length) { vacio(cont, "Todavía no hay videos publicados. ¡Comparte el primero!"); return; }
+    if (!lista.length) { vacio(cont, "Todavía no hay videos publicados. ¡Comparte el primero!", "w3-margin-left w3-margin-right"); return; }
     lista.forEach(function (v) {
       var columna = crear("div", "w3-third w3-margin-bottom");
-      var articulo = crear("article", "w3-card w3-white w3-round w3-hover-shadow");
+      var articulo = crear("article");
       var marco = crear("button", "video-marco w3-display-container");
       marco.type = "button";
       marco.setAttribute("aria-label", "Reproducir video: " + v.titulo);
       marco.style.backgroundImage = "url('https://i.ytimg.com/vi/" + v.youtube_id + "/hqdefault.jpg')";
-      var play = crear("span", "w3-display-middle w3-text-white", "▶");
+      var play = crear("span", "w3-display-middle w3-circle w3-ucr w3-center boton-play", "▶");
       play.setAttribute("aria-hidden", "true");
       marco.appendChild(play);
       marco.addEventListener("click", function () { reproducir(marco, v); });
 
-      var cuerpo = crear("div", "w3-container w3-padding");
-      cuerpo.appendChild(crear("h3", "w3-large sin-margen", v.titulo));
-      if (v.descripcion) { cuerpo.appendChild(crear("p", null, v.descripcion)); }
-      cuerpo.appendChild(crear("p", "w3-small w3-text-grey", v.categoria + " · " + fechaCorta(v.fecha) + " · Por " + v.autor));
+      var cuerpo = crear("div", "w3-padding-16");
+      cuerpo.appendChild(crear("h3", "letra-diario w3-large sin-margen", v.titulo));
+      if (v.descripcion) { cuerpo.appendChild(crear("p", "w3-text-azul-claro w3-small", v.descripcion)); }
+      cuerpo.appendChild(crear("p", "w3-small w3-text-azul-claro", v.categoria + " · " + fechaCorta(v.fecha) + " · Por " + v.autor));
 
       articulo.appendChild(marco);
       articulo.appendChild(cuerpo);

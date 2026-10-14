@@ -1,58 +1,125 @@
 /* =========================================================
    ECCI.IA: estilos propios encima de W3.CSS (w3.css)
-   Casi todo el diseño se hace con clases w3-... en el HTML.
-   Aquí solo van los colores de la UCR y lo que W3.CSS no trae.
+   La estructura (columnas, tarjetas, botones, ventanas) usa clases w3-... en el HTML.
+   Aquí van los colores de la UCR y el aspecto de "periódico digital".
    ========================================================= */
 
 /* ---------- Letras ---------- */
-body { font-family: "Roboto", "Segoe UI", Arial, sans-serif; background: #f3f4f6; }
-h1, h2, h3, h4 { font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif; font-weight: 700; }
+body { font-family: "Roboto", "Segoe UI", Arial, sans-serif; color: #20242c; background: #fff; }
+.letra-titulo, h1, h2, h3, h4 { font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif; font-weight: 800; }
+/* Letra de periódico para los titulares de las noticias */
+.letra-diario { font-family: "Merriweather", Georgia, serif !important; font-weight: 700; }
+.titular-principal { font-size: clamp(1.5rem, 2.6vw, 2.1rem) !important; line-height: 1.2; }
+.titular-lado { font-size: 1.02rem !important; line-height: 1.3; }
+.tarjeta-lado { padding-bottom: 22px; margin-bottom: 22px; }
+/* Botones y etiquetas en MAYÚSCULAS con letra condensada */
+.mayus { font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
 
 /* ---------- Colores oficiales UCR (manual de identidad visual 2019, pág. 28) ----------
-   Se usan igual que los colores de W3: class="w3-ucr", "w3-text-ucr", etc. */
+   Se usan igual que los colores de W3: class="w3-ucr", "w3-text-ucr", "w3-border-ucr"... */
 .w3-ucr, .w3-hover-ucr:hover { color: #fff !important; background-color: #005da4 !important; }
+.w3-ucr-oscuro, .w3-hover-ucr-oscuro:hover { color: #fff !important; background-color: #00487f !important; }
 .w3-celeste, .w3-hover-celeste:hover { color: #0a2a4a !important; background-color: #00c0f3 !important; }
 .w3-marino, .w3-hover-marino:hover { color: #fff !important; background-color: #0a2a4a !important; }
+.w3-gris-suave { background-color: #f3f4f6 !important; }
 .w3-text-ucr { color: #005da4 !important; }
 .w3-text-celeste { color: #00c0f3 !important; }
+.w3-text-suave { color: #626a77 !important; }
+.w3-text-azul-claro { color: #a9c4de !important; }
 .w3-border-ucr { border-color: #005da4 !important; }
+.w3-border-celeste { border-color: #00c0f3 !important; }
+.w3-border-linea { border-color: #e3e5e8 !important; }
 
 /* Ancho máximo del contenido */
-.ancho { max-width: 1200px; margin: 0 auto; }
+.ancho { max-width: 1180px; margin-left: auto !important; margin-right: auto !important; }
+.sin-margen { margin: 0 !important; }
+html { scroll-behavior: smooth; scroll-padding-top: 150px; }
 
-/* ---------- Cinta de titulares que se mueve ---------- */
-.cinta { overflow: hidden; white-space: nowrap; }
-.cinta-pista { display: inline-block; animation: cinta 45s linear infinite; }
-.cinta-pista span { margin-right: 60px; }
+/* ---------- Encabezado: logos arriba (fijo al bajar) y barra azul de secciones ---------- */
+.encabezado { position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 10px rgba(0, 0, 0, .08); }
+.w3-bar .marca { text-decoration: none; display: flex; align-items: center; gap: 14px; padding: 0; }
+.marca img { object-fit: contain; }
+.marca strong { font: 900 2rem "Merriweather", Georgia, serif; letter-spacing: -.03em; color: #15171c; }
+.marca small { display: block; white-space: nowrap; color: #626a77; font-weight: 500; text-transform: uppercase; font-size: .78rem; }
+.menu .w3-bar-item { padding: 12px 18px; font-size: .9rem; }
+
+/* ---------- Cinta "Última hora" ---------- */
+.fila-cinta { display: flex; align-items: center; }
+.fila-cinta > .w3-celeste { flex: none; padding: 8px 16px; font-size: .78rem; letter-spacing: .12em; }
+.cinta { flex: 1; overflow: hidden; white-space: nowrap; }
+.cinta-pista { display: inline-block; animation: cinta 60s linear infinite; }
+.cinta-pista span { margin-left: 24px; font-weight: 500; font-size: .9rem; }
+.cinta-pista span::before { content: "●"; color: #00c0f3; margin-right: 24px; }
 .cinta:hover .cinta-pista { animation-play-state: paused; }
 @keyframes cinta { to { transform: translateX(-50%); } }
 
-/* ---------- Carrusel horizontal de «Más noticias» ---------- */
-.carrusel { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 12px; }
-.carrusel > * { flex: 0 0 230px; scroll-snap-align: start; text-decoration: none; }
+/* ---------- Títulos de sección: barra azul a la izquierda ---------- */
+.titulo-seccion { padding-bottom: 9px; }
+.titulo-seccion h2 { font-size: 1.5rem; text-transform: uppercase; letter-spacing: .03em; padding-left: .8rem; margin: 0; }
+.titulo-seccion p { font-size: .92rem; margin: .3rem 0 0; }
+
+/* ---------- Categoría de una noticia (texto pequeño azul arriba del título) ---------- */
+.categoria { display: block; color: #005da4; font: 800 .78rem "Roboto Condensed", Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
 
 /* ---------- Fotos de las noticias (app.js pone la imagen de fondo) ---------- */
-.foto { height: 190px; background: linear-gradient(135deg, #005da4, #00c0f3) center / cover no-repeat; }
-.foto-mini { height: 120px; }
-.foto-ultima { width: 100%; max-height: 420px; object-fit: cover; }
+/* Sin foto se ve un degradado azul/celeste con rayas */
+.foto { position: relative; height: 190px; border-radius: 4px; overflow: hidden;
+  background: linear-gradient(135deg, #005da4, #00c0f3) center / cover no-repeat; }
+.foto::after { content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(255,255,255,.3) 0, transparent 40%),
+              repeating-linear-gradient(135deg, rgba(255,255,255,.07) 0 12px, transparent 12px 24px); }
+.foto.con-foto::after { display: none; }
+.foto-b { background-image: linear-gradient(135deg, #0a2a4a, #005da4); }
+.foto-c { background-image: linear-gradient(135deg, #00487f, #00c0f3); }
+.foto-grande { height: auto; aspect-ratio: 16 / 9; }
+.foto-lado { height: 100%; min-height: 230px; }
+.foto-mini { height: 140px; border-radius: 0; }
+
+/* Titulares de las noticias */
+.titular { color: #15171c; text-decoration: none; }
+.titular:hover { color: #005da4; }
+/* Corta el resumen a 2 líneas */
+.dos-lineas { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ---------- Carrusel horizontal de «Más noticias» ---------- */
+.carrusel { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding-bottom: 12px; }
+.carrusel > * { flex: 0 0 270px; scroll-snap-align: start; text-decoration: none; display: flex; flex-direction: column; }
+.carrusel > * > .w3-container { flex: 1; display: flex; flex-direction: column; }
+.carrusel small { margin-top: auto; }
+.carrusel::-webkit-scrollbar { height: 8px; }
+.carrusel::-webkit-scrollbar-thumb { background: #626a77; }
+.carrusel > a:hover { box-shadow: 0 8px 24px rgba(0, 0, 0, .12); }
+.carrusel > a:hover .letra-diario { color: #005da4; }
+
+/* ---------- Última noticia ---------- */
+.foto-ultima { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 4px; display: block; }
+.titular-grande { font: 900 clamp(1.6rem, 3vw, 2.4rem)/1.2 "Merriweather", Georgia, serif; color: #15171c; margin: .2rem 0 1rem; }
 
 /* ---------- Videos 16:9 ---------- */
-.video-marco { width: 100%; aspect-ratio: 16 / 9; border: 0; padding: 0; cursor: pointer;
-  background: #000 center / cover no-repeat; display: block; }
-.video-marco .w3-display-middle { font-size: 40px; opacity: .9; }
+.video-marco { width: 100%; aspect-ratio: 16 / 9; border: 0; padding: 0; cursor: pointer; display: block; border-radius: 4px;
+  background: #0a2a4a center / cover no-repeat; }
+.boton-play { width: 56px; height: 56px; line-height: 56px; font-size: 22px; padding-left: 4px; }
 
-/* ---------- Tema del debate (cambia solo cada 7 s) ---------- */
-#tema-debate { transition: opacity .5s; }
-#tema-debate.saliendo { opacity: 0; }
+/* ---------- Opinión ---------- */
+#tema-debate { transition: opacity .5s ease, transform .5s ease; }
+#tema-debate.saliendo { opacity: 0; transform: translateY(8px); }
+.avatar { width: 46px; height: 46px; line-height: 46px; font-weight: 800; font-size: 1.1rem; flex: none; }
+.opinion { display: flex; gap: 16px; }
+.opinion > div:not(.avatar) { flex: 1; min-width: 0; }
+.pildora { border-radius: 999px !important; padding: 4px 12px !important; font-weight: 600; font-size: .85rem; }
 
 /* ---------- Avisos de formularios ---------- */
 .mensaje:empty { display: none; }
 
+/* Las cajas de texto se ponen azules al escribir */
+.w3-input:focus, .w3-select:focus { outline: none; border-color: #005da4 !important; }
+label { font-weight: 600; font-size: .88rem; }
+
 /* ---------- Animaciones al hacer scroll (las activa animaciones.js) ---------- */
 .barra-progreso {
-  position: fixed; top: 0; left: 0; height: 4px; width: 100%; z-index: 100;
+  position: fixed; top: 0; left: 0; height: 3px; width: 100%; z-index: 100;
   transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
-  background: linear-gradient(90deg, #00b4d8, #2fa7f7, #04b7fd);
+  background: #00c0f3;
 }
 .anim {
   opacity: 0;
@@ -66,14 +133,32 @@ h1, h2, h3, h4 { font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-se
 .anim-desenfoque { transform: translateY(20px); filter: blur(8px); }
 .anim.visible { opacity: 1; transform: none; filter: none; }
 
+/* ---------- Celular ---------- */
+@media (max-width: 600px) {
+  .marca strong { font-size: 1.5rem; }
+  .marca small { display: none; }
+  .menu .w3-bar-item { padding: 10px 12px; font-size: .8rem; }
+  .fila-cinta > .w3-celeste { padding: 8px; font-size: .7rem; }
+  .foto-lado { min-height: 120px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   .anim, .anim.visible { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
   .cinta-pista { animation: none; }
   .barra-progreso { display: none; }
 }
 
-/* La barra de arriba es fija: al saltar a una sección, que el título no quede tapado */
-html { scroll-padding-top: 80px; }
-
-/* Quita el margen (W3.CSS no trae esta clase) */
-.sin-margen { margin: 0 !important; }
+/* ---------- Panel de moderación (admin.html): tonos celestes del diseño original ---------- */
+.fondo-panel { background: #f5f9fc; }
+.w3-azul-panel, .w3-hover-azul-panel:hover { color: #fff !important; background-color: #34bbff !important; }
+.w3-text-azul-panel { color: #34bbff !important; font-weight: 700; }
+.w3-text-marino { color: #26507a !important; }
+.w3-border-panel { border-color: #1fb6f0 !important; }
+.letra-georgia { font-family: Georgia, "Times New Roman", serif !important; font-weight: 800; }
+.sombra-panel { box-shadow: 0 6px 24px rgba(10, 37, 64, .10); }
+.marca-panel { text-decoration: none; line-height: 1.1; }
+.marca-panel strong { display: block; font-size: 1.55rem; font-weight: 800; color: #26507a; letter-spacing: -.02em; }
+.marca-panel strong span { color: #1fb6f0; }
+.marca-panel small { color: #5d6b7e; font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
+#lista p { white-space: pre-line; overflow-wrap: anywhere; }

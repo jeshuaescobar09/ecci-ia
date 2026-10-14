@@ -6,52 +6,56 @@
   <title>ECCI Noticias IA | Portal de inteligencia artificial de la ECCI</title>
   <meta name="description" content="Portal de noticias sobre inteligencia artificial de la Escuela de Ciencias de la Computación e Informática (ECCI), UCR.">
   <link rel="preconnect" href="https://i.ytimg.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto:wght@400;500;700&display=swap">
-  <!-- W3.CSS: casi todo el diseño son clases w3-... (guía: https://www.w3schools.com/w3css/) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700;800&family=Roboto:wght@400;500;700&family=Merriweather:wght@700;900&display=swap">
+  <!-- W3.CSS: columnas, tarjetas, botones y ventanas son clases w3-... (guía: https://www.w3schools.com/w3css/) -->
   <link rel="stylesheet" href="w3.css">
-  <!-- Colores UCR y lo poco que W3.CSS no trae -->
+  <!-- Colores UCR y aspecto de periódico -->
   <link rel="stylesheet" href="ecci.css">
 </head>
 <body>
 
-  <!-- ===== Barra superior ===== -->
-  <header class="w3-top">
-    <div class="w3-bar w3-ucr w3-card">
-      <a href="#inicio" class="w3-bar-item w3-button w3-padding-small" aria-label="ECCI Noticias IA, inicio">
-        <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI" class="w3-circle" width="44" height="44" style="vertical-align:middle">
-        <b class="w3-large" style="vertical-align:middle">ECCI<span class="w3-text-celeste">.IA</span></b>
-      </a>
-      <nav aria-label="Secciones">
-        <a href="#principal" class="w3-bar-item w3-button w3-hide-small w3-padding-16">Principal</a>
-        <a href="#ultima" class="w3-bar-item w3-button w3-hide-small w3-padding-16">Última noticia</a>
-        <a href="#videos" class="w3-bar-item w3-button w3-hide-small w3-padding-16">Videos</a>
-        <a href="#opinion" class="w3-bar-item w3-button w3-hide-small w3-padding-16">Opinión</a>
-        <button type="button" data-abrir="subir" class="w3-bar-item w3-button w3-celeste w3-round w3-hide-small" style="margin:10px 8px">+ Subir noticia</button>
-        <button type="button" data-menu class="w3-bar-item w3-button w3-right w3-hide-medium w3-hide-large w3-padding-16" aria-label="Abrir menú">☰</button>
-      </nav>
-      <img src="imagenes/logo-ucr-124.png" alt="Logo Universidad de Costa Rica" class="w3-right w3-hide-small w3-margin-right" width="62" height="46" style="margin-top:6px">
+  <!-- ===== Encabezado: logos + barra de secciones ===== -->
+  <header class="encabezado">
+    <div class="w3-white w3-container">
+      <div class="ancho w3-bar" style="padding:12px 0">
+        <a class="w3-bar-item marca" href="#inicio" aria-label="ECCI Noticias IA, inicio">
+          <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI, Escuela de Ciencias de la Computación e Informática" width="58" height="58">
+          <span>
+            <strong>ECCI<span class="w3-text-ucr">.IA</span></strong>
+            <small>Noticias de inteligencia artificial</small>
+          </span>
+        </a>
+        <img src="imagenes/logo-ucr-124.png" alt="Logo Universidad de Costa Rica" class="w3-bar-item w3-right w3-hide-small" style="height:46px;width:auto;padding:0;margin-top:6px">
+      </div>
     </div>
-    <!-- Menú para celular (lo abre el botón ☰) -->
-    <div id="menu-movil" class="w3-bar-block w3-ucr w3-hide w3-hide-large w3-hide-medium">
-      <a href="#principal" class="w3-bar-item w3-button">Principal</a>
-      <a href="#ultima" class="w3-bar-item w3-button">Última noticia</a>
-      <a href="#videos" class="w3-bar-item w3-button">Videos</a>
-      <a href="#opinion" class="w3-bar-item w3-button">Opinión</a>
-      <button type="button" data-abrir="subir" class="w3-bar-item w3-button w3-celeste">+ Subir noticia</button>
+
+    <div class="w3-ucr w3-container">
+      <nav class="ancho w3-bar menu mayus" aria-label="Secciones">
+        <a href="#principal" class="w3-bar-item w3-button w3-hover-ucr-oscuro">Principal</a>
+        <a href="#ultima" class="w3-bar-item w3-button w3-hover-ucr-oscuro">Última noticia</a>
+        <a href="#videos" class="w3-bar-item w3-button w3-hover-ucr-oscuro">Videos</a>
+        <a href="#opinion" class="w3-bar-item w3-button w3-hover-ucr-oscuro">Opinión</a>
+        <button type="button" data-abrir="subir" class="w3-bar-item w3-button w3-celeste w3-hover-white w3-right mayus">+ Subir noticia</button>
+      </nav>
     </div>
   </header>
 
-  <!-- ===== Cinta de titulares ===== -->
-  <section id="inicio" class="w3-marino w3-padding cinta" aria-label="Titulares destacados" style="margin-top:72px">
-    <div class="cinta-pista">
-      <span>¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
-      <span>Abierta la convocatoria: publica tus propias noticias sobre IA</span>
-      <span>Nuevo ciclo de charlas sobre Big Data y Procesamiento de Lenguaje Natural</span>
-      <span>Estudiantes de la ECCI presentan proyectos de voz y accesibilidad</span>
-      <span aria-hidden="true">¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
-      <span aria-hidden="true">Abierta la convocatoria: publica tus propias noticias sobre IA</span>
-      <span aria-hidden="true">Nuevo ciclo de charlas sobre Big Data y Procesamiento de Lenguaje Natural</span>
-      <span aria-hidden="true">Estudiantes de la ECCI presentan proyectos de voz y accesibilidad</span>
+  <!-- ===== Cinta "Última hora" ===== -->
+  <section id="inicio" class="w3-container w3-marino w3-bottombar w3-border-celeste" aria-label="Titulares destacados" style="border-bottom-width:3px!important">
+    <div class="ancho fila-cinta">
+      <span class="w3-celeste mayus">Última hora</span>
+      <div class="cinta" aria-live="off">
+        <div class="cinta-pista">
+          <span>¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
+          <span>Abierta la convocatoria: publica tus propias noticias sobre IA</span>
+          <span>Nuevo ciclo de charlas sobre Big Data y Procesamiento de Lenguaje Natural</span>
+          <span>Estudiantes de la ECCI presentan proyectos de voz y accesibilidad</span>
+          <span aria-hidden="true">¡La IA llegó a la ECCI! Un robot humanoide roba protagonismo entre estudiantes</span>
+          <span aria-hidden="true">Abierta la convocatoria: publica tus propias noticias sobre IA</span>
+          <span aria-hidden="true">Nuevo ciclo de charlas sobre Big Data y Procesamiento de Lenguaje Natural</span>
+          <span aria-hidden="true">Estudiantes de la ECCI presentan proyectos de voz y accesibilidad</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -60,74 +64,78 @@
     <!-- ===== Lo principal ===== -->
     <section id="principal" class="w3-container w3-padding-32">
       <div class="ancho">
-        <header class="titulo-seccion w3-border-bottom w3-border-ucr w3-margin-bottom">
-          <h2 class="w3-text-ucr w3-xxlarge">Lo principal</h2>
-          <p class="w3-text-grey">Las noticias que están moviendo la ECCI</p>
+        <header class="titulo-seccion w3-border-bottom w3-border-linea w3-margin-bottom">
+          <h2 class="w3-leftbar w3-border-ucr">Lo principal</h2>
+          <p class="w3-text-suave">Las noticias que están moviendo la ECCI</p>
         </header>
 
-        <div class="w3-bar">
-          <h3 class="w3-bar-item w3-padding-small">Más noticias</h3>
-          <button type="button" class="w3-bar-item w3-button w3-right w3-round w3-light-grey w3-margin-left" data-flecha="1" aria-label="Noticias siguientes">→</button>
-          <button type="button" class="w3-bar-item w3-button w3-right w3-round w3-light-grey" data-flecha="-1" aria-label="Noticias anteriores">←</button>
-        </div>
-        <!-- app.js llena este carrusel con las noticias de la base de datos -->
-        <div id="mas-noticias" class="carrusel" tabindex="0" aria-label="Más noticias, desplazamiento horizontal">
-          <p class="w3-text-grey">Cargando noticias…</p>
+        <!-- app.js pone aquí 3 noticias al azar: una grande a la izquierda y dos al lado -->
+        <div id="principales" class="w3-row" style="margin:24px -16px 32px">
+          <p class="w3-text-suave w3-padding">Cargando noticias…</p>
         </div>
 
-        <!-- app.js pone aquí 3 noticias al azar -->
-        <div id="principales" class="w3-row-padding w3-section" style="margin:0 -16px">
-          <p class="w3-text-grey w3-padding">Cargando noticias…</p>
-        </div>
+        <!-- Más noticias: franja gris con desplazamiento horizontal -->
+        <section class="w3-gris-suave w3-topbar w3-border-ucr w3-padding-large" aria-labelledby="mas-noticias-titulo" style="border-top-width:3px!important">
+          <div class="w3-bar w3-margin-bottom">
+            <h3 id="mas-noticias-titulo" class="w3-bar-item w3-padding-small sin-margen mayus" style="letter-spacing:.12em;font-size:1rem">Más noticias</h3>
+            <button type="button" class="w3-bar-item w3-button w3-white w3-border w3-hover-ucr w3-round w3-right" data-flecha="1" aria-label="Noticias siguientes">→</button>
+            <button type="button" class="w3-bar-item w3-button w3-white w3-border w3-hover-ucr w3-round w3-right" data-flecha="-1" aria-label="Noticias anteriores" style="margin-right:8px">←</button>
+            <span class="w3-bar-item w3-right w3-text-suave w3-small w3-hide-small">Desliza o usa las flechas</span>
+          </div>
+          <!-- app.js llena este carrusel con las noticias de la base de datos -->
+          <div id="mas-noticias" class="carrusel" tabindex="0" aria-label="Más noticias, desplazamiento horizontal">
+            <p class="w3-text-suave">Cargando noticias…</p>
+          </div>
+        </section>
       </div>
     </section>
 
     <!-- ===== Última noticia ===== -->
-    <section id="ultima" class="w3-container w3-marino w3-padding-32">
+    <section id="ultima" class="w3-container w3-padding-32 w3-border-top w3-border-linea">
       <div class="ancho">
-        <header class="titulo-seccion w3-margin-bottom">
-          <h2 class="w3-xxlarge">Última noticia</h2>
-          <p class="w3-text-light-grey">Lo más reciente, directo desde la ECCI</p>
+        <header class="titulo-seccion w3-border-bottom w3-border-linea w3-margin-bottom">
+          <h2 class="w3-leftbar w3-border-ucr">Última noticia</h2>
+          <p class="w3-text-suave">Lo más reciente, directo desde la ECCI</p>
         </header>
         <!-- app.js llena esta parte -->
-        <article id="ultima-noticia" class="w3-row-padding" style="margin:0 -16px">
+        <article id="ultima-noticia" class="w3-row" style="margin:24px -16px 0">
           <p class="w3-padding">Cargando…</p>
         </article>
       </div>
     </section>
 
-    <!-- ===== Videos ===== -->
-    <section id="videos" class="w3-container w3-padding-32">
+    <!-- ===== Videos: franja oscura ===== -->
+    <section id="videos" class="w3-container w3-marino w3-padding-32">
       <div class="ancho">
-        <header class="titulo-seccion w3-border-bottom w3-border-ucr w3-margin-bottom">
-          <h2 class="w3-text-ucr w3-xxlarge">Videos</h2>
-          <p class="w3-text-grey">Charlas, demostraciones y proyectos en movimiento</p>
+        <header class="titulo-seccion w3-border-bottom w3-margin-bottom" style="border-color:#1f4468!important">
+          <h2 class="w3-leftbar w3-border-ucr">Videos</h2>
+          <p class="w3-text-azul-claro">Charlas, demostraciones y proyectos en movimiento</p>
         </header>
         <!-- app.js llena esta lista con los videos aprobados -->
-        <div id="lista-videos" class="w3-row-padding" style="margin:0 -16px">
-          <p class="w3-text-grey w3-padding">Cargando videos…</p>
+        <div id="lista-videos" class="w3-row-padding" style="margin:24px -16px 0">
+          <p class="w3-padding">Cargando videos…</p>
         </div>
         <p class="w3-center w3-section">
-          <button type="button" data-abrir="subir-video" class="w3-button w3-ucr w3-round">+ Compartir un video</button>
+          <button type="button" data-abrir="subir-video" class="w3-button w3-ucr w3-hover-ucr-oscuro w3-round mayus">+ Compartir un video</button>
         </p>
       </div>
     </section>
 
     <!-- ===== Opinión ===== -->
-    <section id="opinion" class="w3-container w3-white w3-padding-32">
+    <section id="opinion" class="w3-container w3-gris-suave w3-padding-32">
       <div class="ancho">
-        <header class="titulo-seccion w3-border-bottom w3-border-ucr w3-margin-bottom">
-          <h2 class="w3-text-ucr w3-xxlarge">Opinión</h2>
-          <p>
-            <span class="w3-tag w3-ucr w3-round">Debate abierto</span>
-            <b id="tema-debate" class="w3-large" aria-live="off">¿La IA es aliada o amenaza para la universidad?</b>
+        <header class="titulo-seccion w3-border-bottom w3-border-linea w3-margin-bottom">
+          <h2 class="w3-leftbar w3-border-ucr">Opinión</h2>
+          <p style="margin-top:16px">
+            <span class="w3-tag w3-ucr mayus w3-small" style="letter-spacing:.1em">Debate abierto</span>
+            <span id="tema-debate" class="letra-diario w3-large w3-margin-left" style="display:inline-block;font-weight:700;color:#15171c" aria-live="off">¿La IA es aliada o amenaza para la universidad?</span>
           </p>
         </header>
 
-        <div class="w3-row-padding" style="margin:0 -16px">
-          <div class="w3-third w3-margin-bottom">
-            <form id="form-opinion" class="w3-card w3-round w3-padding w3-light-grey" action="#" method="post">
-              <h3>Deja tu opinión</h3>
+        <div class="w3-row" style="margin:24px -16px 0">
+          <div class="w3-col l4 m12 w3-padding w3-margin-bottom">
+            <form id="form-opinion" class="w3-white w3-topbar w3-border-ucr w3-padding-large" action="#" method="post">
+              <h3 class="mayus w3-large">Deja tu opinión</h3>
               <label for="op-nombre">Nombre</label>
               <input id="op-nombre" name="nombre" type="text" class="w3-input w3-border w3-round w3-margin-bottom" placeholder="Tu nombre o alias" required>
 
@@ -142,45 +150,53 @@
               <label for="op-texto">Tu opinión</label>
               <textarea id="op-texto" name="opinion" rows="5" class="w3-input w3-border w3-round w3-margin-bottom" placeholder="Cuéntanos qué piensas…" required></textarea>
 
-              <button type="submit" class="w3-button w3-ucr w3-round w3-block">Publicar opinión</button>
-              <p class="w3-small w3-text-grey aviso">Las opiniones serán revisadas antes de publicarse.</p>
+              <button type="submit" class="w3-button w3-ucr w3-hover-ucr-oscuro w3-round w3-block mayus">Publicar opinión</button>
+              <p class="w3-small w3-text-suave aviso">Las opiniones serán revisadas antes de publicarse.</p>
             </form>
           </div>
 
           <!-- app.js pone aquí las opiniones aprobadas, con sus «me gusta» y comentarios -->
-          <section id="hilo" class="w3-twothird" aria-label="Opiniones publicadas">
-            <p class="w3-text-grey">Cargando opiniones…</p>
+          <section id="hilo" class="w3-col l8 m12 w3-padding" aria-label="Opiniones publicadas">
+            <p class="w3-text-suave">Cargando opiniones…</p>
           </section>
         </div>
       </div>
     </section>
 
     <!-- ===== Invitación a subir noticias ===== -->
-    <aside id="cta" class="w3-container w3-ucr w3-padding-32 w3-center" aria-labelledby="cta-titulo">
-      <h2 id="cta-titulo">¿Tienes una noticia sobre IA?</h2>
-      <p>Compártela con la comunidad ECCI.</p>
-      <button type="button" data-abrir="subir" class="w3-button w3-white w3-text-ucr w3-round w3-large">+ Subir mi noticia</button>
+    <aside id="cta" class="w3-container w3-ucr w3-padding-48" aria-labelledby="cta-titulo">
+      <div class="ancho w3-row">
+        <div class="w3-col m8">
+          <h2 id="cta-titulo" class="mayus sin-margen" style="font-size:2rem;letter-spacing:0">¿Tienes una noticia sobre IA?</h2>
+          <p class="sin-margen">Compártela con la comunidad ECCI.</p>
+        </div>
+        <div class="w3-col m4 w3-right-align">
+          <button type="button" data-abrir="subir" class="w3-button w3-white w3-text-ucr w3-hover-marino w3-round w3-large mayus w3-margin-top" style="padding:12px 32px">+ Subir mi noticia</button>
+        </div>
+      </div>
     </aside>
 
   </main>
 
   <!-- ===== Pie de página ===== -->
-  <footer class="w3-container w3-marino w3-padding-32 w3-center">
-    <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI" class="w3-circle w3-margin-right" width="58" height="58" loading="lazy">
-    <img src="imagenes/logo-ucr-124.png" alt="Logo UCR" width="62" height="46" loading="lazy">
-    <p>ECCI.IA · Portal estudiantil de noticias sobre inteligencia artificial<br>
-      Escuela de Ciencias de la Computación e Informática · Universidad de Costa Rica</p>
+  <footer class="w3-container w3-marino w3-topbar w3-border-celeste w3-padding-32">
+    <div class="ancho w3-row">
+      <div class="w3-col m4">
+        <img src="imagenes/logo-ecci-120.jpg" alt="Logo ECCI" class="w3-white w3-round w3-margin-right" width="58" height="58" style="padding:4px" loading="lazy">
+        <img src="imagenes/logo-ucr-124.png" alt="Logo UCR" class="w3-white w3-round" width="62" height="46" style="padding:4px" loading="lazy">
+      </div>
+      <p class="w3-col m8 w3-right-align w3-text-azul-claro w3-small">ECCI.IA · Portal estudiantil de noticias sobre inteligencia artificial<br>
+        Escuela de Ciencias de la Computación e Informática · Universidad de Costa Rica</p>
+    </div>
   </footer>
 
   <!-- ===== Ventana para subir una noticia (W3 modal) ===== -->
   <div id="subir" class="w3-modal" role="dialog" aria-modal="true" aria-labelledby="subir-titulo">
-    <div class="w3-modal-content w3-card-4 w3-round w3-animate-top" style="max-width:720px">
-      <header class="w3-container w3-ucr">
-        <button type="button" data-cerrar class="w3-button w3-display-topright w3-large" aria-label="Cerrar ventana">×</button>
-        <h2 id="subir-titulo">Sube tu noticia</h2>
-      </header>
-      <div class="w3-container w3-padding">
-        <p>Tu noticia quedará <strong>pendiente de aprobación</strong>. Un moderador la revisará antes de publicarla en el portal.</p>
+    <div class="w3-modal-content w3-card-4 w3-round w3-topbar w3-border-ucr w3-animate-opacity" style="max-width:680px">
+      <div class="w3-container w3-padding-large">
+        <button type="button" data-cerrar class="w3-button w3-display-topright w3-xlarge w3-text-suave w3-round" aria-label="Cerrar ventana">×</button>
+        <h2 id="subir-titulo" class="mayus">Sube tu noticia</h2>
+        <p class="w3-text-suave w3-small">Tu noticia quedará <strong>pendiente de aprobación</strong>. Un moderador la revisará antes de publicarla en el portal.</p>
 
         <form action="#" method="post" enctype="multipart/form-data">
           <div class="w3-row-padding" style="margin:0 -16px">
@@ -216,16 +232,16 @@
           <label for="n-img">Imagen (opcional)</label>
           <input id="n-img" name="imagen" type="file" accept="image/*" class="w3-input w3-border w3-round w3-margin-bottom">
 
-          <p>
-            <label>
+          <p class="w3-small w3-text-suave">
+            <label style="font-weight:400">
               <input type="checkbox" name="acepta" class="w3-check" required>
               Confirmo que la información es veraz y acepto que sea revisada antes de su publicación.
             </label>
           </p>
 
           <div class="botones w3-right-align w3-padding-16">
-            <button type="button" data-cerrar class="w3-button w3-light-grey w3-round">Cancelar</button>
-            <button type="submit" class="w3-button w3-ucr w3-round">Enviar para revisión</button>
+            <button type="button" data-cerrar class="w3-button w3-white w3-border w3-round mayus">Cancelar</button>
+            <button type="submit" class="w3-button w3-ucr w3-hover-ucr-oscuro w3-round mayus">Enviar para revisión</button>
           </div>
         </form>
       </div>
@@ -234,13 +250,11 @@
 
   <!-- ===== Ventana para compartir un video ===== -->
   <div id="subir-video" class="w3-modal" role="dialog" aria-modal="true" aria-labelledby="subir-video-titulo">
-    <div class="w3-modal-content w3-card-4 w3-round w3-animate-top" style="max-width:720px">
-      <header class="w3-container w3-ucr">
-        <button type="button" data-cerrar class="w3-button w3-display-topright w3-large" aria-label="Cerrar ventana">×</button>
-        <h2 id="subir-video-titulo">Comparte un video</h2>
-      </header>
-      <div class="w3-container w3-padding">
-        <p>Sube tu video a <strong>YouTube</strong> (puede ser «No listado») y pega aquí el enlace.
+    <div class="w3-modal-content w3-card-4 w3-round w3-topbar w3-border-ucr w3-animate-opacity" style="max-width:680px">
+      <div class="w3-container w3-padding-large">
+        <button type="button" data-cerrar class="w3-button w3-display-topright w3-xlarge w3-text-suave w3-round" aria-label="Cerrar ventana">×</button>
+        <h2 id="subir-video-titulo" class="mayus">Comparte un video</h2>
+        <p class="w3-text-suave w3-small">Sube tu video a <strong>YouTube</strong> (puede ser «No listado») y pega aquí el enlace.
           Quedará <strong>pendiente de aprobación</strong> hasta que un moderador lo revise.</p>
 
         <form action="#" method="post">
@@ -274,16 +288,16 @@
           <label for="v-desc">Descripción (opcional, máx. 300 caracteres)</label>
           <textarea id="v-desc" name="descripcion" rows="2" maxlength="300" class="w3-input w3-border w3-round w3-margin-bottom"></textarea>
 
-          <p>
-            <label>
+          <p class="w3-small w3-text-suave">
+            <label style="font-weight:400">
               <input type="checkbox" name="acepta" class="w3-check" required>
               Confirmo que tengo permiso para compartir este video y acepto que sea revisado antes de publicarse.
             </label>
           </p>
 
           <div class="botones w3-right-align w3-padding-16">
-            <button type="button" data-cerrar class="w3-button w3-light-grey w3-round">Cancelar</button>
-            <button type="submit" class="w3-button w3-ucr w3-round">Enviar para revisión</button>
+            <button type="button" data-cerrar class="w3-button w3-white w3-border w3-round mayus">Cancelar</button>
+            <button type="submit" class="w3-button w3-ucr w3-hover-ucr-oscuro w3-round mayus">Enviar para revisión</button>
           </div>
         </form>
       </div>
@@ -292,14 +306,14 @@
 
   <!-- ===== Ventana para leer una noticia completa (app.js la llena) ===== -->
   <div id="leer" class="w3-modal" role="dialog" aria-modal="true" aria-labelledby="leer-titulo">
-    <article class="w3-modal-content w3-card-4 w3-round w3-animate-top" style="max-width:800px">
-      <div class="w3-container w3-padding-16">
-        <button type="button" data-cerrar class="w3-button w3-display-topright w3-large" aria-label="Cerrar ventana">×</button>
-        <span id="leer-categoria" class="w3-tag w3-ucr w3-round"></span>
-        <h2 id="leer-titulo"></h2>
-        <p id="leer-meta" class="w3-text-grey"></p>
-        <img id="leer-imagen" class="w3-image w3-round w3-margin-bottom" style="width:100%" alt="" hidden>
-        <div id="leer-texto"></div>
+    <article class="w3-modal-content w3-card-4 w3-round w3-topbar w3-border-ucr w3-animate-opacity" style="max-width:760px">
+      <div class="w3-container w3-padding-large">
+        <button type="button" data-cerrar class="w3-button w3-display-topright w3-xlarge w3-text-suave w3-round" aria-label="Cerrar ventana">×</button>
+        <span id="leer-categoria" class="categoria w3-margin-top"></span>
+        <h2 id="leer-titulo" class="letra-diario" style="font-weight:900;padding-right:40px"></h2>
+        <p id="leer-meta" class="w3-small w3-text-suave"></p>
+        <img id="leer-imagen" class="w3-round w3-margin-bottom" style="width:100%;max-height:380px;object-fit:cover" alt="" hidden>
+        <div id="leer-texto" style="white-space:pre-line;line-height:1.7"></div>
       </div>
     </article>
   </div>

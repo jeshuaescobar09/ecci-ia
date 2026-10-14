@@ -9,52 +9,55 @@
   <link rel="stylesheet" href="w3.css">
   <link rel="stylesheet" href="ecci.css">
 </head>
-<body>
-  <header class="w3-bar w3-ucr w3-card">
-    <a class="w3-bar-item w3-button w3-padding-16" href="index.html" aria-label="Volver al portal ECCI.IA">
-      <b>ECCI<span class="w3-text-celeste">.IA</span></b> · Panel de moderación
-    </a>
-    <a href="index.html" id="ir-portal" class="w3-bar-item w3-button w3-right w3-padding-16">Ver portal</a>
+<body class="fondo-panel">
+  <header class="w3-white w3-bottombar w3-border-panel" style="border-bottom-width:3px!important">
+    <div class="ancho w3-bar w3-padding-small">
+      <a class="w3-bar-item marca-panel" href="index.html" aria-label="Volver al portal ECCI.IA">
+        <strong>ECCI<span>.IA</span></strong>
+        <small>Panel de moderación</small>
+      </a>
+      <a href="index.html" id="ir-portal" class="w3-bar-item w3-button w3-right w3-round w3-text-marino w3-padding-16" style="font-weight:600">Ver portal</a>
+    </div>
   </header>
 
   <main class="w3-container w3-padding-32 ancho">
 
-    <section id="acceso" class="w3-card w3-white w3-round w3-padding-large" style="max-width:480px;margin:0 auto">
-      <h1 class="w3-text-ucr">Moderación</h1>
-      <p>Solo para el equipo de la ECCI. Escribe la clave de administración (la que está en tu archivo <code>.env</code>).</p>
+    <section id="acceso" class="w3-white w3-round-xlarge w3-padding-large sombra-panel" style="max-width:440px;margin:48px auto">
+      <h1 class="letra-georgia w3-text-marino">Moderación</h1>
+      <p class="w3-text-suave">Solo para el equipo de la ECCI. Escribe la clave de administración (la que está en tu archivo <code>.env</code>).</p>
       <form id="form-acceso" autocomplete="off">
-        <label for="clave">Clave de administración</label>
+        <label for="clave" class="w3-text-marino">Clave de administración</label>
         <input type="password" id="clave" class="w3-input w3-border w3-round w3-margin-bottom" required minlength="1" autocomplete="off">
-        <button class="w3-button w3-ucr w3-round w3-block" type="submit">Entrar</button>
+        <button class="w3-button w3-azul-panel w3-block pildora" style="padding:12px!important" type="submit">Entrar</button>
         <p class="mensaje" id="msg-acceso" role="alert"></p>
       </form>
     </section>
 
     <section id="panel" hidden>
-      <div class="w3-bar">
-        <h1 class="w3-bar-item w3-padding-small w3-text-ucr sin-margen">Panel de moderación</h1>
-        <button class="w3-bar-item w3-button w3-light-grey w3-round w3-right" id="salir" type="button">Cerrar sesión</button>
+      <div class="w3-bar w3-margin-bottom">
+        <h1 class="w3-bar-item w3-padding-small letra-georgia w3-text-marino sin-margen">Panel de moderación</h1>
+        <button class="w3-bar-item w3-button w3-white w3-border pildora w3-right" id="salir" type="button">Cerrar sesión</button>
       </div>
 
       <!-- Contadores: los llena el script -->
-      <div class="w3-row-padding w3-section" id="resumen" style="margin:0 -16px"></div>
+      <div class="w3-row-padding" id="resumen" style="margin:0 -16px"></div>
 
-      <div class="w3-bar w3-white w3-card w3-round" role="tablist">
-        <button type="button" id="tab-noticias" class="w3-bar-item w3-button w3-ucr" role="tab">Noticias</button>
-        <button type="button" id="tab-opiniones" class="w3-bar-item w3-button" role="tab">Opiniones</button>
-        <button type="button" id="tab-videos" class="w3-bar-item w3-button" role="tab">Videos</button>
-        <button type="button" id="tab-comentarios" class="w3-bar-item w3-button" role="tab">Comentarios</button>
+      <div class="w3-section" role="tablist">
+        <button type="button" id="tab-noticias" class="w3-button pildora w3-border w3-border-panel w3-azul-panel" role="tab">Noticias</button>
+        <button type="button" id="tab-opiniones" class="w3-button pildora w3-border w3-border-panel w3-white" role="tab">Opiniones</button>
+        <button type="button" id="tab-videos" class="w3-button pildora w3-border w3-border-panel w3-white" role="tab">Videos</button>
+        <button type="button" id="tab-comentarios" class="w3-button pildora w3-border w3-border-panel w3-white" role="tab">Comentarios</button>
       </div>
 
       <div class="w3-section">
-        <label for="filtro">Mostrar</label>
-        <select id="filtro" class="w3-select w3-border w3-round" style="width:auto">
+        <label for="filtro" class="w3-text-marino">Mostrar</label>
+        <select id="filtro" class="w3-select w3-border w3-round" style="width:auto;min-width:170px">
           <option value="pendiente">Pendientes</option>
           <option value="aprobada">Aprobadas</option>
           <option value="rechazada">Rechazadas</option>
           <option value="todas">Todas</option>
         </select>
-        <button class="w3-button w3-light-grey w3-round" id="recargar" type="button">Actualizar</button>
+        <button class="w3-button w3-white w3-border pildora" id="recargar" type="button">Actualizar</button>
       </div>
 
       <p class="mensaje" id="msg-panel" role="alert"></p>
@@ -168,16 +171,16 @@
       partes.forEach(function (p) {
         var n = p[1] || 0;
         var col = crear("div", "w3-quarter w3-margin-bottom");
-        var c = crear("div", "w3-card w3-round w3-padding w3-center " + (p[2] && n > 0 ? "w3-amber" : "w3-white"));
-        c.appendChild(crear("div", "w3-xxlarge", String(n)));
-        c.appendChild(crear("span", "", p[0]));
+        var c = crear("div", "w3-white w3-round-large w3-padding w3-leftbar sombra-panel " + (p[2] && n > 0 ? "w3-border-amber" : "w3-border-panel"));
+        c.appendChild(crear("div", "w3-xxlarge w3-text-marino", String(n))).style.fontWeight = "800";
+        c.appendChild(crear("span", "w3-small w3-text-suave", p[0])).style.fontWeight = "600";
         col.appendChild(c);
         cont.appendChild(col);
       });
     }
 
     function accion(texto, clase, fn) {
-      var b = crear("button", "w3-button w3-round w3-margin-right " + clase, texto);
+      var b = crear("button", "w3-button pildora w3-margin-right " + clase, texto);
       b.type = "button";
       b.addEventListener("click", function () { b.disabled = true; fn().then(null, function () {}).then(function () { b.disabled = false; }); });
       return b;
@@ -188,19 +191,19 @@
       return pedir(metodo, ruta, cuerpo).then(cargar, errorPanel);
     }
 
-    var COLOR_ESTADO = { pendiente: "w3-amber", aprobada: "w3-green", rechazada: "w3-red" };
+    var COLOR_ESTADO = { pendiente: "w3-pale-yellow", aprobada: "w3-pale-green", rechazada: "w3-pale-red" };
 
     function tarjeta(d) {
-      var it = crear("article", "w3-card w3-white w3-round w3-padding w3-margin-bottom");
+      var it = crear("article", "w3-white w3-round-large w3-padding-large w3-margin-bottom sombra-panel");
       var et = crear("div");
-      et.appendChild(crear("span", "w3-tag w3-round " + (COLOR_ESTADO[d.estado] || "w3-grey"), d.estado));
+      et.appendChild(crear("span", "w3-tag w3-round mayus w3-small " + (COLOR_ESTADO[d.estado] || "w3-light-grey"), d.estado));
       et.appendChild(document.createTextNode(" "));
       if (tipo !== "opiniones" && d.categoria) { et.appendChild(crear("span", "w3-tag w3-light-grey w3-round", d.categoria)); }
       if (tipo === "opiniones" && d.tema) { et.appendChild(crear("span", "w3-tag w3-light-grey w3-round", d.tema)); }
       it.appendChild(et);
 
       if (tipo === "noticias") {
-        it.appendChild(crear("h3", "", d.titulo));
+        it.appendChild(crear("h3", "letra-georgia w3-text-marino w3-large sin-margen", d.titulo));
         var meta = "Por " + d.autor + (d.correo ? " · " + d.correo : "") + " · " + fecha(d.fecha_creacion);
         it.appendChild(crear("p", "w3-small w3-text-grey", meta));
         it.appendChild(crear("p", "", d.resumen));
@@ -213,7 +216,7 @@
         det.appendChild(div);
         it.appendChild(det);
       } else if (tipo === "videos") {
-        it.appendChild(crear("h3", "", d.titulo));
+        it.appendChild(crear("h3", "letra-georgia w3-text-marino w3-large sin-margen", d.titulo));
         it.appendChild(crear("p", "w3-small w3-text-grey", "Por " + d.autor + (d.correo ? " · " + d.correo : "") + " · " + fecha(d.fecha_creacion)));
         if (d.descripcion) { it.appendChild(crear("p", "", d.descripcion)); }
         if (/^[A-Za-z0-9_-]{11}$/.test(d.youtube_id || "")) {
@@ -223,7 +226,7 @@
           mini.loading = "lazy";
           it.appendChild(mini);
           it.appendChild(crear("br"));
-          var ver = crear("a", "w3-text-ucr", "Ver el video en YouTube ↗");
+          var ver = crear("a", "w3-text-azul-panel", "Ver el video en YouTube ↗");
           ver.href = "https://www.youtube.com/watch?v=" + d.youtube_id;
           ver.target = "_blank";
           ver.rel = "noopener noreferrer";
@@ -241,22 +244,22 @@
       }
 
       if (d.estado === "rechazada" && d.motivo_rechazo) {
-        it.appendChild(crear("p", "w3-text-red", "Motivo: " + d.motivo_rechazo));
+        it.appendChild(crear("p", "w3-pale-red w3-padding-small w3-round", "Motivo: " + d.motivo_rechazo));
       }
 
       var base = "/api/admin/" + tipo + "/" + encodeURIComponent(d.id);
       var ac = crear("div", "w3-padding-16");
       if (d.estado !== "aprobada") {
-        ac.appendChild(accion("Aprobar", "w3-green", function () { return ejecutar("POST", base + "/aprobar"); }));
+        ac.appendChild(accion("Aprobar", "w3-green w3-hover-teal", function () { return ejecutar("POST", base + "/aprobar"); }));
       }
       if (d.estado !== "rechazada") {
-        ac.appendChild(accion("Rechazar", "w3-orange", function () {
+        ac.appendChild(accion("Rechazar", "w3-white w3-border w3-text-red", function () {
           var motivo = window.prompt("Motivo del rechazo (opcional, máx. 300 caracteres):", "");
           if (motivo === null) { return Promise.resolve(); }
           return ejecutar("POST", base + "/rechazar", { motivo: motivo.slice(0, 300) });
         }));
       }
-      ac.appendChild(accion("Eliminar", "w3-red", function () {
+      ac.appendChild(accion("Eliminar", "w3-white w3-border w3-text-suave w3-hover-pale-red", function () {
         if (!window.confirm("¿Eliminar definitivamente? No se puede deshacer.")) { return Promise.resolve(); }
         return ejecutar("DELETE", base);
       }));
@@ -281,7 +284,8 @@
     function cambiarTab(nuevo) {
       tipo = nuevo;
       ["noticias", "opiniones", "videos", "comentarios"].forEach(function (t) {
-        $("tab-" + t).classList.toggle("w3-ucr", t === nuevo);
+        $("tab-" + t).classList.toggle("w3-azul-panel", t === nuevo);
+        $("tab-" + t).classList.toggle("w3-white", t !== nuevo);
       });
       cargar();
     }
